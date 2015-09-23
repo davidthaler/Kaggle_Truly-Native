@@ -1,8 +1,5 @@
 import pandas as pd
-import zipfile
 import os
-from bs4 import BeautifulSoup as bs
-import pdb
 
 HOME = os.path.expanduser('~')
 BASE = os.path.join(HOME, 'Documents', 'Kaggle', 'dato')
