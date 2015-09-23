@@ -5,7 +5,28 @@ import util
 
 ZIP_TEMPLATE = '%s.zip'
 
+
+def generate_train():
+  train_dict = util.load_train(as_dict=True)
+  for archive_num in range(5):
+    for item in one_archive(archive_num, train_dict):
+      yield item
+    
       
+def generate_test():
+  for item in one_archive(5, None):
+    yield item
+    
+
+def limit(archive_num, train_data, max_items):
+  it = one_archive(archive_num, train_data)
+  for (k, item) in enumerate(it):
+    if k == max_items:
+      break
+    else:
+      yield item
+
+
 def one_archive(archive_num, train_data):
   '''
   A generator that produces tuples of (label or filename, soup), 
@@ -32,7 +53,7 @@ def one_archive(archive_num, train_data):
       pages = [page for page in pages if page.split('/')[1] in train_data]
     for page in pages:
       f = zf.open(page)
-      soup = bs(f, 'lxml')
+      soup = bs(f, 'html.parser')
       page_name = page.split('/')[1]
       if train_data is not None:
         yield (train_data[page_name], soup)
