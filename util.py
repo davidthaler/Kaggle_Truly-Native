@@ -8,12 +8,12 @@ TRAIN = os.path.join(DATA, 'train_v2.csv')
 SAMPLE = os.path.join(DATA, 'sampleSubmission_v2.csv')
 
 
-def loadTrain(as_dict=False):
+def load_train(as_dict):
   '''
   Loads full training set, including labels, as either a data frame or a dict.
   
   Args:
-    as_dict - default False. If True, return a dict from filenames to labels
+    as_dict - If True, return a dict from filenames to labels
         instead of a data frame.
 
   Returns:
