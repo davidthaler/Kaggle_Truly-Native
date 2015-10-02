@@ -3,12 +3,14 @@ from csv import DictWriter
 import zip_io
 import util
 import os
+from datetime import datetime
 import pdb
 
 
 # Don't forget to get the length/compressed length from the zip archive
 
 def write_sample(outfile, n_pos, n_neg):
+  start = datetime.now()
   outpath = os.path.join(util.DATA, 'processed', outfile + '.csv')
   sample = zip_io.generate_sample(n_pos, n_neg, True)
   fieldnames = ['file', 'sponsored', 'tag_ct', 'head_tag_ct', 'body_tag_ct',
@@ -90,4 +92,5 @@ def write_sample(outfile, n_pos, n_neg):
       row['input_file'] = len(page.select('input[type=file]'))
       row['input_radio'] = len(page.select('input[type=radio]'))
       writer.writerow(row)
-      
+  finish = datetime.now()
+  print 'Elapsed time: %d sec.' % (finish - start).seconds
