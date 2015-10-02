@@ -1,4 +1,5 @@
 import pandas as pd
+import cPickle
 import os
 
 HOME = os.path.expanduser('~')
@@ -6,7 +7,7 @@ BASE = os.path.join(HOME, 'Documents', 'Kaggle', 'dato')
 DATA = os.path.join(BASE, 'data')
 TRAIN = os.path.join(DATA, 'train_v2.csv')
 SAMPLE = os.path.join(DATA, 'sampleSubmission_v2.csv')
-
+ARTIFACTS =  os.path.join(BASE, 'artifacts')
 
 def load_train(as_dict):
   '''
@@ -40,6 +41,61 @@ def sample_submission():
   Loads the sample submission as a Pandas data frame.
   '''
   return pd.read_csv(SAMPLE)
+
+
+def put_artifact(obj, artifactfile):
+  '''
+  Pickles an object at ARTIFACTS/artifactfile
+  
+  args:
+    obj - an intermediate result to pickle
+    artifactfile - obj is pickled at ARTIFACT/artifactfile
+  
+  return:
+    nothing, but obj is pickled at ARTIFACT/artifactfile.pkl
+  '''
+  artifactpath = os.path.join(ARTIFACTS, artifactfile + '.pkl')
+  with open(artifactpath, 'w') as f:
+    cPickle.dump(obj, f)
+
+
+def get_artifact(artifactfile):
+  '''
+  Recovers a pickled intermediate result (artifact) from ARTIFACTS/
+  
+  args:
+    artifactfile - an object is loaded from ARTIFACTS/artifactfile 
+    
+  return:
+    the reloaded intermediate object
+  '''
+  artifactpath = os.path.join(ARTIFACTS, artifactfile + '.pkl')
+  with open(artifactpath) as f:
+    artifact = cPickle.load(f)
+  return artifact
+
+
+def create_sample(outfile, n_pos, n_neg):
+  '''
+  Creates a dict describing a specific sample of rows and saves 
+  it at ARTIFACTS with form {filename : label}.
+  
+  args:
+    outfile - the dict is written at ARTIFACTS/<outfile>.pkl
+    n_pos - approximate number of positive instances in sample
+    n_neg - approximate number of negative instances in sample
+    
+  return:
+    nothing, but dict is pickled at ARTIFACT/<outfile>.pkl
+  '''
+  tr = load_train(False)
+  tr_pos = tr[tr.sponsored == 1]
+  tr_pos = tr_pos.sample(n_pos)
+  tr_neg = tr[tr.sponsored == 0]
+  tr_neg = tr.sample(n_neg)
+  sample_df = tr_pos.append(tr_neg)
+  sample = dict(zip(sample_df.file, sample_df.sponsored))
+  put_artifact(sample, outfile)
 
 
 
