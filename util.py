@@ -1,13 +1,7 @@
 import pandas as pd
 import cPickle
 import os
-
-HOME = os.path.expanduser('~')
-BASE = os.path.join(HOME, 'Documents', 'Kaggle', 'dato')
-DATA = os.path.join(BASE, 'data')
-TRAIN = os.path.join(DATA, 'train_v2.csv')
-SAMPLE = os.path.join(DATA, 'sampleSubmission_v2.csv')
-ARTIFACTS =  os.path.join(BASE, 'artifacts')
+import paths
 
 def load_train(as_dict):
   '''
@@ -21,7 +15,7 @@ def load_train(as_dict):
     the training data either as a data frame, 
     or as a dict from filenames to labels.
   '''
-  tr = pd.read_csv(TRAIN)
+  tr = pd.read_csv(paths.TRAIN)
   if as_dict:
     return dict(zip(tr.file, tr.sponsored))
   else:
@@ -32,7 +26,7 @@ def train_ids():
   '''
   Loads the training set ids into a set.
   '''
-  tr = pd.read_csv(TRAIN)
+  tr = pd.read_csv(paths.TRAIN)
   return set(tr.file)
 
   
@@ -40,7 +34,7 @@ def sample_submission():
   '''
   Loads the sample submission as a Pandas data frame.
   '''
-  return pd.read_csv(SAMPLE)
+  return pd.read_csv(paths.SAMPLE)
 
 
 def put_artifact(obj, artifactfile):
@@ -54,7 +48,7 @@ def put_artifact(obj, artifactfile):
   return:
     nothing, but obj is pickled at ARTIFACT/artifactfile.pkl
   '''
-  artifactpath = os.path.join(ARTIFACTS, artifactfile + '.pkl')
+  artifactpath = os.path.join(paths.ARTIFACTS, artifactfile + '.pkl')
   with open(artifactpath, 'w') as f:
     cPickle.dump(obj, f)
 
@@ -69,7 +63,7 @@ def get_artifact(artifactfile):
   return:
     the reloaded intermediate object
   '''
-  artifactpath = os.path.join(ARTIFACTS, artifactfile + '.pkl')
+  artifactpath = os.path.join(paths.ARTIFACTS, artifactfile + '.pkl')
   with open(artifactpath) as f:
     artifact = cPickle.load(f)
   return artifact
