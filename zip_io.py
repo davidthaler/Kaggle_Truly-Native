@@ -2,6 +2,8 @@ import zipfile
 import os
 from random import random
 from bs4 import BeautifulSoup as bs
+import paths
+import artifacts
 
 ZIP_TEMPLATE = '%s.zip'
 
@@ -12,7 +14,7 @@ def generate_sample(sample, n_pos, n_neg, verbose=False):
 
 
 def generate_train():
-  train_dict = util.load_train(as_dict=True)
+  train_dict = artifacts.get_artifact('train_dict')
   for archive_num in range(5):
     for item in one_archive(archive_num, train_dict):
       yield item
@@ -53,7 +55,7 @@ def one_archive(archive_num, train_data, verbose=False):
   archive_name = ZIP_TEMPLATE % str(archive_num)
   if verbose:
     print 'reading %s' % archive_name 
-  archive_path = os.path.join(util.DATA, archive_name)
+  archive_path = os.path.join(paths.DATA, archive_name)
   with zipfile.ZipFile(archive_path) as zf:
     # first entry is '<archive_num>/'
     pages = zf.namelist()[1:]
