@@ -2,20 +2,12 @@ import zipfile
 import os
 from random import random
 from bs4 import BeautifulSoup as bs
-import util
 
 ZIP_TEMPLATE = '%s.zip'
 
-def generate_sample(n_pos, n_neg, max_rows=None):
-  tr = util.load_train(False)
-  tr_pos = tr[tr.sponsored == 1]
-  tr_pos = tr_pos.sample(n_pos)
-  tr_neg = tr[tr.sponsored == 0]
-  tr_neg = tr.sample(n_neg)
-  sample_df = tr_pos.append(tr_neg)
-  sample = dict(zip(sample_df.file, sample_df.sponsored))
+def generate_sample(sample, n_pos, n_neg, verbose=False):
   for archive_num in range(5):
-    for item in one_archive(archive_num, sample):
+    for item in one_archive(archive_num, sample, verbose):
       yield item
 
 
@@ -40,7 +32,7 @@ def limit(archive_num, train_data, max_items):
       yield item
 
 
-def one_archive(archive_num, train_data):
+def one_archive(archive_num, train_data, verbose=False):
   '''
   A generator that produces tuples of (filename, label, soup) or
   (filename, soup), where soup is a web page parsed by BeautifulSoup,
@@ -58,7 +50,9 @@ def one_archive(archive_num, train_data):
     A tuple of either labels or file names and a BeautifulSoup object 
     for each file in the zip archive.
   '''
-  archive_name = ZIP_TEMPLATE % str(archive_num)  
+  archive_name = ZIP_TEMPLATE % str(archive_num)
+  if verbose:
+    print 'reading %s' % archive_name 
   archive_path = os.path.join(util.DATA, archive_name)
   with zipfile.ZipFile(archive_path) as zf:
     # first entry is '<archive_num>/'
