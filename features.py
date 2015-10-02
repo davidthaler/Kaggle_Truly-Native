@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup as bs
 from csv import DictWriter
 import zip_io
-import util
+import paths
 import os
 from datetime import datetime
 import pdb
@@ -11,7 +11,7 @@ import pdb
 
 def write_sample(outfile, n_pos, n_neg):
   start = datetime.now()
-  outpath = os.path.join(util.DATA, 'processed', outfile + '.csv')
+  outpath = os.path.join(paths.DATA, 'processed', outfile + '.csv')
   sample = zip_io.generate_sample(n_pos, n_neg, True)
   fieldnames = ['file', 'sponsored', 'tag_ct', 'head_tag_ct', 'body_tag_ct',
                 'script', 'head_script', 'body_script', 'meta', 'link',
