@@ -1,18 +1,19 @@
 from bs4 import BeautifulSoup as bs
 from csv import DictWriter
+import os
+import argparse
+from datetime import datetime
 import zip_io
 import paths
-import os
-from datetime import datetime
-import pdb
+import artifacts
 
-
+# Do not import pandas into this module.
 # Don't forget to get the length/compressed length from the zip archive
 
-def write_sample(outfile, n_pos, n_neg):
+def write_sample(sample_dict, outfile):
   start = datetime.now()
-  outpath = os.path.join(paths.DATA, 'processed', outfile + '.csv')
-  sample = zip_io.generate_sample(n_pos, n_neg, True)
+  outpath = os.path.join(paths.PROCESSED, outfile + '.csv')
+  sample = zip_io.generate_sample(sample_dict, True)
   fieldnames = ['file', 'sponsored', 'tag_ct', 'head_tag_ct', 'body_tag_ct',
                 'script', 'head_script', 'body_script', 'meta', 'link',
                 'main', 'article', 'section', 'header', 'footer', 'nav',
@@ -94,3 +95,17 @@ def write_sample(outfile, n_pos, n_neg):
       writer.writerow(row)
   finish = datetime.now()
   print 'Elapsed time: %d sec.' % (finish - start).seconds
+
+
+if __name__ == '__main__':
+  parser = argparse.ArgumentParser(description =
+             'Write sample of training data as .csv file at paths.ARTIFACTS')
+  parser.add_argument('sample_dict', type=str, help = 
+          'filename of sample dict at paths/ARTTIFACTS')
+  parser.add_argument('outfile', type=str, help = 
+           'Data matrix written at paths/PROCESSED/<outfile>.csv')
+  args = parser.parse_args()
+  sample_dict = artifacts.get_artifact(args.sample_dict)
+  write_sample(sample_dict, args.outfile)
+
+

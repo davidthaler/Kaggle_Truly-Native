@@ -5,9 +5,11 @@ from bs4 import BeautifulSoup as bs
 import paths
 import artifacts
 
+# Do not import pandas into this module.
+
 ZIP_TEMPLATE = '%s.zip'
 
-def generate_sample(sample, n_pos, n_neg, verbose=False):
+def generate_sample(sample, verbose=False):
   for archive_num in range(5):
     for item in one_archive(archive_num, sample, verbose):
       yield item
