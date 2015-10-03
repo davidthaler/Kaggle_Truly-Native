@@ -2,6 +2,8 @@ import pandas as pd
 import os
 import paths
 
+# This module imports pandas
+
 def load_train(as_dict):
   '''
   Loads full training set, including labels, as either a data frame or a dict.

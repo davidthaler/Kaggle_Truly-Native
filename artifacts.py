@@ -2,6 +2,8 @@ import os
 import cPickle
 import paths
 
+# Do not import pandas into this module.
+
 def put_artifact(obj, artifactfile):
   '''
   Pickles an object at ARTIFACTS/artifactfile
