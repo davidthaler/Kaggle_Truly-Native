@@ -27,6 +27,15 @@ def load_train(as_dict):
     return tr
 
 
+def test_dict():
+  '''
+  Makes a dict with label of 0 (as python int) for use in some routines.
+  '''
+  test = sample_submission()
+  labels = [0] * len(test.file)
+  return dict(zip(test.file, labels))
+
+
 def train_ids():
   '''
   Loads the training set ids into a set.
