@@ -14,7 +14,7 @@ def write_sample(sample_dict, outfile):
   start = datetime.now()
   outpath = os.path.join(paths.PROCESSED, outfile + '.csv')
   if sample_dict is not None:
-    sample = zip_io.generate_sample(sample_dict, True)
+    sample = zip_io.generate_sample(sample_dict)
   else:
     sample = zip_io.generate_test()
   fieldnames = ['file', 'sponsored', 'tag_ct', 'head_tag_ct', 'body_tag_ct',

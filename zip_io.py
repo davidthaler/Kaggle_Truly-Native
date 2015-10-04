@@ -9,9 +9,9 @@ import artifacts
 
 ZIP_TEMPLATE = '%s.zip'
 
-def generate_sample(sample, verbose=False):
+def generate_sample(sample):
   for archive_num in range(5):
-    for item in one_archive(archive_num, sample, verbose):
+    for item in one_archive(archive_num, sample):
       yield item
 
 
@@ -36,7 +36,7 @@ def limit(archive_num, train_data, max_items):
       yield item
 
 
-def one_archive(archive_num, train_data, verbose=False):
+def one_archive(archive_num, train_data):
   '''
   A generator that produces tuples of (filename, label, soup) or
   (filename, soup), where soup is a web page parsed by BeautifulSoup,
@@ -55,8 +55,7 @@ def one_archive(archive_num, train_data, verbose=False):
     for each file in the zip archive.
   '''
   archive_name = ZIP_TEMPLATE % str(archive_num)
-  if verbose:
-    print 'reading %s' % archive_name 
+  print 'reading %s' % archive_name 
   archive_path = os.path.join(paths.DATA, archive_name)
   with zipfile.ZipFile(archive_path) as zf:
     # first entry is '<archive_num>/'

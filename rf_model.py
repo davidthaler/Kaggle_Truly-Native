@@ -31,14 +31,19 @@ def predict_rf(rf, data):
 
 
 def run_rf(train_data, test_data, n_trees, submit_id):
+  start = datetime.now()
   train_path = os.path.join(paths.PROCESSED, train_data + '.csv')
   train = pd.read_csv(train_path)
   rf = train_rf(train, n_trees)
+  train_finish = datetime.now()
+  print 'Training completed: %d sec.' % (train_finish - start).seconds
   test_path = os.path.join(paths.PROCESSED, test_data + '.csv')
+  
   test = pd.read_csv(test_path)
   result = predict_rf(rf, test)
   submission_name = 'submission_%s.csv' % str(submit_id)
   submission = os.path.join(paths.SUBMIT, submission_name)
   result.to_csv(submission, index=False)
-
+  finish = datetime.now()
+  print 'Run finished: %d sec.' % (finish - start).seconds
 
