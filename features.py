@@ -27,6 +27,7 @@ def write_sample(sample_dict, outfile):
                 'th', 'td', 'frame', 'iframe', 'input_button', 'input_text', 
                 'input_submit', 'input_reset','input_email', 'input_password', 
                 'input_hidden', 'input_search', 'input_file', 'input_radio' ]
+  fieldnames.extend(['style', 'head_style', 'body_style'])
   with open(outpath, 'w') as f_out:
     writer = DictWriter(f_out, fieldnames=fieldnames)
     writer.writeheader()
@@ -95,6 +96,12 @@ def write_sample(sample_dict, outfile):
       row['input_search'] = len(page.select('input[type=search]'))
       row['input_file'] = len(page.select('input[type=file]'))
       row['input_radio'] = len(page.select('input[type=radio]'))
+      
+      # Tags added 10/3
+      row['style'] = len(page.select('style'))
+      row['head_style'] = len(page.select('head style'))
+      row['body_style'] = len(page.select('body style'))
+      
       writer.writerow(row)
   finish = datetime.now()
   print 'Elapsed time: %d sec.' % (finish - start).seconds
