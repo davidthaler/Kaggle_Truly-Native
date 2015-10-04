@@ -9,3 +9,5 @@ TRAIN = os.path.join(DATA, 'train_v2.csv')
 SAMPLE = os.path.join(DATA, 'sampleSubmission_v2.csv')
 ARTIFACTS =  os.path.join(BASE, 'artifacts')
 PROCESSED = os.path.join(DATA, 'processed')
+SUBMIT = os.path.join(BASE, 'submissions')
+
