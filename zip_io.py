@@ -70,7 +70,7 @@ def one_archive(archive_num, train_data, verbose=False):
       if train_data is not None:
         yield (page_name, train_data[page_name], soup)
       else:
-        yield (page_name, soup)
+        yield (page_name, 0, soup)
         
         
 

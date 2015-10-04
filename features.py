@@ -8,12 +8,15 @@ import paths
 import artifacts
 
 # Do not import pandas into this module.
-# Don't forget to get the length/compressed length from the zip archive
+# TODO: Don't forget to get the length/compressed length from the zip archive
 
 def write_sample(sample_dict, outfile):
   start = datetime.now()
   outpath = os.path.join(paths.PROCESSED, outfile + '.csv')
-  sample = zip_io.generate_sample(sample_dict, True)
+  if sample_dict is not None:
+    sample = zip_io.generate_sample(sample_dict, True)
+  else:
+    sample = zip_io.generate_test()
   fieldnames = ['file', 'sponsored', 'tag_ct', 'head_tag_ct', 'body_tag_ct',
                 'script', 'head_script', 'body_script', 'meta', 'link',
                 'main', 'article', 'section', 'header', 'footer', 'nav',
@@ -100,12 +103,15 @@ def write_sample(sample_dict, outfile):
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description =
              'Write sample of training data as .csv file at paths.ARTIFACTS')
-  parser.add_argument('sample_dict', type=str, help = 
-          'filename of sample dict at paths/ARTTIFACTS')
   parser.add_argument('outfile', type=str, help = 
            'Data matrix written at paths/PROCESSED/<outfile>.csv')
+  parser.add_argument('--sample', type=str, help = 
+          'filename of sample dict at paths/ARTIFACTS')
   args = parser.parse_args()
-  sample_dict = artifacts.get_artifact(args.sample_dict)
-  write_sample(sample_dict, args.outfile)
-
+  
+  if args.sample is not None:
+    sample_dict = artifacts.get_artifact(args.sample)
+    write_sample(sample_dict, args.outfile)
+  else:
+    write_sample(None, args.outfile)
 
