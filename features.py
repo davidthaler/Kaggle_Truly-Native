@@ -10,42 +10,43 @@ import artifacts
 # Do not import pandas into this module.
 # TODO: Don't forget to get the length/compressed length from the zip archive
 
-BARE_TAGS = [ 'script', 'style', 'meta', 'link', 'main', 'article', 
-              'section', 'header', 'footer', 'nav',
-              'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'div', 'span', 'p', 
-              'a', 'img', 'ul', 'ol', 'li', 'input', 'form', 'button',
-              'br', 'em', 'center', 'i', 'b', 'pre', 'code', 'strong', 
-              'strike', 'audio', 'video', 'canvas', 'map', 'table', 'tr',
-              'th', 'td', 'frame', 'iframe', 'dd', 'dl', 'dt', 'ins', 
-              'textarea']
+BARE_TAGS = ['a', 'article', 'audio', 'b', 'br', 'button', 'canvas', 
+             'center', 'code', 'dd', 'div', 'dl', 'dt', 'em', 'footer', 
+             'form', 'frame', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 
+             'i', 'iframe', 'img', 'input', 'ins', 'li', 'link', 'main', 
+             'map', 'meta', 'nav', 'ol', 'p', 'pre', 'script', 'section', 
+             'span', 'strike', 'strong', 'style', 'table', 'td', 'textarea', 
+             'th', 'tr', 'ul', 'video']
 
-TAG_ATTR_VAL = ['input type button', 'input type text', 'input type submit',
-                'input type reset', 'input type email', 'input type password', 
-                'input type hidden', 'input type search', 'input type file',
-                'input type radio', 'link rel stylesheet', 'meta name viewport', 
-                'link rel icon', 'style type text/css',
-                'link type text/css', 'link type text/javascript', 'a rel close',
-                'link media all', 'script language javascript', 'a rel nofollow',
-                'form method get', 'form method post', 'a target _blank', 
-                'a target #']
+TAG_ATTR_VAL = ['a rel close', 'a rel nofollow', 'a target #', 
+                'a target _blank', 'form method get', 'form method post', 
+                'input type button', 'input type email', 'input type file', 
+                'input type hidden', 'input type password', 
+                'input type radio', 'input type reset', 'input type search', 
+                'input type submit', 'input type text', 'link media all', 
+                'link rel icon', 'link rel stylesheet', 'link type text/css', 
+                'link type text/javascript', 'meta name viewport', 
+                'script language javascript', 'style type text/css']
 
-TAG_ATTR = ['a class', 'article class', 'aside class', 'dd class', 'div class',
-            'dl class', 'dt class', 'footer class', 'form class', 'h1 class',
-            'h2 class', 'h3 class', 'h4 class', 'h5 class', 'h6 class', 
-            'header class', 'i class', 'img class', 'input class', 'ins class',
-            'li class', 'ol class', 'ul class', 'nav class', 'section class', 
-            'span class', 'meta content', 'meta name', 'meta property', 
-            'meta rel', 'meta charset', 'script async', 'link media', 
-            'script src', 'a rel', 'input value', 'input name', 'a target', 
-            'div style', 'input placeholder', 'input autocomplete', 
-            'form action', 'img alt', 'a title', 'a height', 'a width', 
-            'img height', 'img width', 'img border', 'span style', 'p lang',
-            'a onclick', 'img onclick', 'div onclick', 'span onclick', 
-            'p onclick', 'form onsubmit', 'link rel']
+TAG_ATTR = ['a class', 'a height', 'a onclick', 'a rel', 'a target', 
+            'a title', 'a width', 'article class', 'aside class', 
+            'dd class', 'div class', 'div onclick', 'div style', 
+            'dl class', 'dt class', 'footer class', 'form action', 
+            'form class', 'form onsubmit', 'h1 class', 'h2 class', 
+            'h3 class', 'h4 class', 'h5 class', 'h6 class', 
+            'header class', 'i class', 'img alt', 'img border', 
+            'img class', 'img height', 'img onclick', 'img width', 
+            'input autocomplete', 'input class', 'input name', 
+            'input placeholder', 'input value', 'ins class', 'li class', 
+            'link media', 'link rel', 'meta charset', 'meta content', 
+            'meta name', 'meta property', 'meta rel', 'nav class', 
+            'ol class', 'p lang', 'p onclick', 'script async', 'script src', 
+            'section class', 'span class', 'span onclick', 'span style', 
+            'ul class']
 
-TEXT_NAMES = ['markup_len', 'markup_line_ct', 'short_doctype', 'long_doctype',
-              'transitional', 'strict', 'text_len', 'text_line_ct', 
-              'text_token_ct', 'semicolon_ct', 'bracket_ct']
+TEXT_NAMES = ['bracket_ct', 'long_doctype', 'markup_len', 'markup_line_ct',
+              'semicolon_ct', 'short_doctype', 'strict', 'text_len', 
+              'text_line_ct', 'text_token_ct', 'transitional']
 
 
 def write_sample(sample_dict, outfile):
