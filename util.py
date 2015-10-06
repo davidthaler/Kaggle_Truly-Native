@@ -2,7 +2,16 @@ import pandas as pd
 import os
 import paths
 
-# This module imports pandas
+# This module imports pandas, so it can't run under pypy
+
+def load_features(feature_set_name):
+  '''
+  Utility function to load a feature set with filename <feature_set_name.csv>
+  at path data/processed.
+  '''
+  path = os.path.join(paths.PROCESSED, feature_set_name + '.csv')
+  return pd.read_csv(path)
+
 
 def load_train(as_dict):
   '''
