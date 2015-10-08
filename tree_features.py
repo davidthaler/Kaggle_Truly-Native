@@ -11,15 +11,15 @@ import artifacts
 # Do not import pandas into this module.
 # TODO: Don't forget to get the length/compressed length from the zip archive
 
-BARE_TAGS = ['a', 'article', 'audio', 'b', 'br', 'button', 'canvas', 
-             'center', 'code', 'dd', 'div', 'dl', 'dt', 'em', 'footer', 
-             'form', 'frame', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 
-             'i', 'iframe', 'img', 'input', 'ins', 'li', 'link', 'main', 
-             'map', 'meta', 'nav', 'ol', 'p', 'pre', 'script', 'section', 
+BARE_TAGS = ['a', 'article', 'b', 'br', 'button', 
+             'center', 'dd', 'div', 'dl', 'dt', 'em', 'footer', 
+             'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 
+             'i', 'iframe', 'img', 'input', 'ins', 'li', 'link', 
+             'meta', 'nav', 'ol', 'p', 'script', 'section', 
              'span', 'strike', 'strong', 'style', 'table', 'td', 'textarea', 
-             'th', 'tr', 'ul', 'video']
+             'th', 'tr', 'ul']
 
-TAG_ATTR_VAL = ['a rel close', 'a rel nofollow', 'a target #', 
+TAG_ATTR_VAL = ['a rel nofollow',
                 'a target _blank', 'form method get', 'form method post', 
                 'input type button', 'input type email', 'input type file', 
                 'input type hidden', 'input type password', 
@@ -29,20 +29,19 @@ TAG_ATTR_VAL = ['a rel close', 'a rel nofollow', 'a target #',
                 'link type text/javascript', 'meta name viewport', 
                 'script language javascript', 'style type text/css']
 
-TAG_ATTR = ['a class', 'a height', 'a onclick', 'a rel', 'a target', 
-            'a title', 'a width', 'article class', 'aside class', 
-            'dd class', 'div class', 'div onclick', 'div style', 
-            'dl class', 'dt class', 'footer class', 'form action', 
+TAG_ATTR = ['a class', 'a onclick', 'a rel', 'a target', 
+            'a title', 'article class', 'aside class', 'div class', 
+            'div style', 'footer class', 'form action', 
             'form class', 'form onsubmit', 'h1 class', 'h2 class', 
             'h3 class', 'h4 class', 'h5 class', 'h6 class', 
             'header class', 'i class', 'img alt', 'img border', 
-            'img class', 'img height', 'img onclick', 'img width', 
+            'img class', 'img height', 'img width', 
             'input autocomplete', 'input class', 'input name', 
             'input placeholder', 'input value', 'ins class', 'li class', 
             'link media', 'link rel', 'meta charset', 'meta content', 
-            'meta name', 'meta property', 'meta rel', 'nav class', 
-            'ol class', 'p lang', 'p onclick', 'script async', 'script src', 
-            'section class', 'span class', 'span onclick', 'span style', 
+            'meta name', 'meta property', 'nav class', 
+            'ol class', 'script async', 'script src', 
+            'section class', 'span class', 'span style', 
             'ul class']
 
 TEXT_NAMES = ['bracket_ct', 'long_doctype', 'markup_len', 'markup_line_ct',
@@ -53,26 +52,16 @@ SCRIPT_FEATURES = ['script_text_ct', 'script_no_txt', 'total_script_length',
                    'max_script_length', 'mean_script_length', 
                    'script_tot_lines', 'script_max_lines', 
                    'script_tot_braces', 'script_max_braces', 
-                   'script_urls', 'script_distinct_urls', 
-                   'script_src_wp_content', 'script_src_wp_includes', 
-                   'script_src_facebook', 'script_src_google',
-                   'script_src_twitter', 'script_src_pinterest', 
-                   'script_src_linkedin', 'script_src_jquery', 
-                   'script_src_mootools', 'script_src_tumblr', 
-                   'script_src_maps', 'script_src_amazonaws', 
-                   'script_src_cloudfront', 'script_src_stumbleupon', 
-                   'script_src_addthis', 'script_src_outbrain', 
-                   'script_src_googlesyndication', 
-                   'script_url_facebook', 'script_url_google',
-                   'script_url_twitter', 'script_url_pinterest', 
-                   'script_url_linkedin', 'script_url_jquery', 
-                   'script_url_mootools', 'script_url_tumblr', 
-                   'script_url_maps', 'script_url_amazonaws', 
-                   'script_url_cloudfront', 'script_url_stumbleupon', 
-                   'script_url_addthis', 'script_url_outbrain', 
-                   'script_url_googlesyndication']
+                   'script_urls', 'script_distinct_urls']
+                   
+URL_FEATURES = ['facebook', 'google', 'twitter', 'pinterest', 'linkedin', 
+                 'amazonaws', 'cloudfront', 'addthis', 'googlesyndication']
 
-
+PATH_FEATURES = ['wp-content', 'wp-includes', 'plugins', 'jquery', 'sites', 
+                 'assets', 'js', 'widgets', 'files', 'ajax', 'themes', 
+                 'public', 'google', 'bootstrap', 'pagead', 'media', 
+                 'static', 'share']
+                 
 def write_sample(sample_dict, outfile):
   start = datetime.now()
   outpath = os.path.join(paths.PROCESSED, outfile + '.csv')
@@ -90,6 +79,10 @@ def write_sample(sample_dict, outfile):
   fieldnames.extend(tag_attr_names)
   fieldnames.extend(TEXT_NAMES)
   fieldnames.extend(SCRIPT_FEATURES)
+  script_url_names = ['script_url_' + url for url in URL_FEATURES]
+  fieldnames.extend(script_url_names)
+  script_path_names = ['script_path_' + p for p in PATH_FEATURES]
+  fieldnames.extend(script_path_names)
   with open(outpath, 'w') as f_out:
     writer = DictWriter(f_out, fieldnames=fieldnames)
     writer.writeheader()
@@ -173,45 +166,17 @@ def script_features(row, page):
   row['script_tot_braces'] = sum(braces)
   row['script_max_braces'] = safemax(braces)
   srcs = [tag['src'] for tag in page.select('script[src]')]
-  row['script_src_wp_content'] = sum(['wp-content' in s for s in srcs])
-  row['script_src_wp_includes'] = sum(['wp-includes' in s for s in srcs])
-  row['script_src_facebook'] = sum(['facebook' in s for s in srcs])
-  row['script_src_google'] = sum(['google' in s for s in srcs])
-  row['script_src_twitter'] = sum(['twitter' in s for s in srcs])
-  row['script_src_pinterest'] = sum(['pinterest' in s for s in srcs])
-  row['script_src_linkedin'] = sum(['linkedin' in s for s in srcs])
-  row['script_src_jquery'] = sum(['jquery' in s for s in srcs])
-  row['script_src_mootools'] = sum(['mootools' in s for s in srcs])
-  row['script_src_tumblr'] = sum(['tumblr' in s for s in srcs])
-  row['script_src_maps'] = sum(['maps.google' in s for s in srcs])
-  row['script_src_amazonaws'] = sum(['amazonaws' in s for s in srcs])
-  row['script_src_cloudfront'] = sum(['cloudfront' in s for s in srcs])
-  row['script_src_stumbleupon'] = sum(['stumbleupon' in s for s in srcs])
-  row['script_src_addthis'] = sum(['addthis' in s for s in srcs])
-  row['script_src_outbrain'] = sum(['outbrain' in s for s in srcs])
-  row['script_src_googlesyndication'] = sum(['googlesyndication' in s for s in srcs])
   urls = [urlparse(s).netloc for s in srcs]
   urls = [u for u in urls if len(u) > 0]
   row['script_urls'] = len(urls)
   row['script_distinct_urls'] = len(set(urls))
-  row['script_url_facebook'] = sum(['facebook' in s for s in urls])
-  row['script_url_google'] = sum(['google' in s for s in urls])
-  row['script_url_twitter'] = sum(['twitter' in s for s in urls])
-  row['script_url_pinterest'] = sum(['pinterest' in s for s in urls])
-  row['script_url_linkedin'] = sum(['linkedin' in s for s in urls])
-  row['script_url_jquery'] = sum(['jquery' in s for s in urls])
-  row['script_url_mootools'] = sum(['mootools' in s for s in urls])
-  row['script_url_tumblr'] = sum(['tumblr' in s for s in urls])
-  row['script_url_maps'] = sum(['maps.google' in s for s in urls])
-  row['script_url_amazonaws'] = sum(['amazonaws' in s for s in urls])
-  row['script_url_cloudfront'] = sum(['cloudfront' in s for s in urls])
-  row['script_url_stumbleupon'] = sum(['stumbleupon' in s for s in urls])
-  row['script_url_addthis'] = sum(['addthis' in s for s in urls])
-  row['script_url_outbrain'] = sum(['outbrain' in s for s in urls])
-  row['script_url_googlesyndication'] = sum(['googlesyndication' in s for s in urls])
-  
-# also taboola, modernizr, optimizely prototype, scriptaculous, cloudflare,
-# bootstrap, plugins, themes...so we need a loop
+  for url in URL_FEATURES:
+    key = 'script_url_' + url
+    row[key] = sum([url in s for s in urls])
+  paths = [urlparse(s).path for s in srcs]
+  for path_part in PATH_FEATURES:
+    key = 'script_path_' + path_part
+    row[key] = sum([path_part in s for s in paths])
 
 
 if __name__ == '__main__':
