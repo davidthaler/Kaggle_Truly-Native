@@ -18,7 +18,7 @@ def load_sparse(feature_set_name,
   
   Args:
     feature_set_name - just the filename, w/o path or extension
-    n_features - probably 2**24, see sparse_features.py
+    n_features - probably 2**20, see sparse_features.py
     log_transform - if True, transform counts with log1p
     row_normalize - if True, L2 normalize rows after log transform (if used)
     

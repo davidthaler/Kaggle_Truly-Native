@@ -25,7 +25,11 @@ def write_features(sample_dict, outfile):
       page = page_tuple[2]
       row = {}
       tag_counts(row, page)
+      #tag_bigrams(row, page)
+      #tag_trigrams(row, page)
       tag_attrs(row, page)
+      tag_attr_vals(row, page)
+      #attrs(row, page)
       f_out.write(label + ' ')
       for key in sorted(row.keys()):
         f_out.write('%s:%d ' % (key, row[key]))
@@ -35,21 +39,31 @@ def write_features(sample_dict, outfile):
   finish = datetime.now()
   print 'Elapsed time: %d sec.' % (finish - start).seconds
 
-    
+
 def tag_counts(row, page):
   tags = page.find_all(True)
   for tag in tags:
     key = abs(hash(tag.name)) % D
     ct = row.get(tag.name, 0)
     row[key] = ct + 1
+
+def tag_bigrams(row, page):
+  tags = page.find_all(True)
+  for tag in tags:
     children = tag.find_all(True, recursive=False)
     for child in children:
       key = abs(hash(tag.name + '-' + child.name)) % D
       ct = row.get(key, 0)
       row[key] = ct + 1
-      grandchildren = child.find_all(True, recursive=False)
-      for grandchild in grandchildren:
-        key = abs(hash(tag.name + '-' + child.name + '_' + grandchild.name)) % D
+
+def tag_trigrams(row, page):
+  tags = page.find_all(True)
+  for tag in tags:
+    children = tag.find_all(True, recursive=False)
+    for child in children:
+      grandkids = child.find_all(True, recursive=False)
+      for grandkid in grandkids:
+        key = abs(hash(tag.name + '-' + child.name + '_' + grandkid.name)) % D
         ct = row.get(key, 0)
         row[key] = ct + 1
 
@@ -57,18 +71,30 @@ def tag_counts(row, page):
 def tag_attrs(row, page):
   tags = page.find_all(True)
   for tag in tags:
-    attrs = tag.attrs
-    for a in attrs:
+    for a in tag.attrs:
       key = abs(hash(tag.name + '-' + a)) % D
       ct = row.get(key, 0)
       row[key] = ct + 1
-      
-      # tag-attr-val
-      value = unicode(tag.attrs[a])
+
+
+def tag_attr_vals(row, page):
+  tags = page.find_all(True)
+  for tag in tags:
+    for a in tag.attrs:
+      value = unicode(tag.attrs[a])               # can be a list
       key = abs(hash(tag.name + '-' + a + '-' + value)) % D
       ct = row.get(key, 0)
       row[key] = ct + 1
+  
       
+def attrs(row, page):
+  tags = page.find_all(True)
+  for tag in tags:
+    for a in tag.attrs:
+      key = abs(hash(a)) % D
+      ct = row.get(key, 0)
+      row[key] = ct + 1
+  
   
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description =
@@ -77,7 +103,7 @@ if __name__ == '__main__':
            'Data matrix written at paths/PROCESSED/<outfile>.libsvm')
   parser.add_argument('--sample', type=str, help = 
           'filename of sample dict at paths/ARTIFACTS')
-  parser.add_argument('--bits', type=int, default=2**20, help=
+  parser.add_argument('--bits', type=int, default=20, help=
           'notional feature space dimension is 2**bits')
   args = parser.parse_args()
   D = 2**args.bits
