@@ -1,8 +1,42 @@
 import pandas as pd
 import os
+from datetime import datetime
+from sklearn.datasets import load_svmlight_file
+from sklearn.preprocessing import normalize
 import paths
 
 # This module imports pandas, so it can't run under pypy
+
+def load_sparse(feature_set_name,
+                n_features, 
+                log_transform=True, 
+                row_normalize=True):
+  '''
+  Utility function to load a sparse feature set for linear models.
+  Features must be in LibSVM format. 
+  Must be located at data/processed<feature_set_name>.libsvm
+  
+  Args:
+    feature_set_name - just the filename, w/o path or extension
+    n_features - probably 2**24, see sparse_features.py
+    log_transform - if True, transform counts with log1p
+    row_normalize - if True, L2 normalize rows after log transform (if used)
+    
+  Returns:
+    x - scipy.sparse.csr matrix of features
+    y - numpy 1-D array of labels
+  '''
+  start = datetime.now()
+  path = os.path.join(paths.PROCESSED, feature_set_name + '.libsvm')
+  x, y = load_svmlight_file(path, n_features=n_features)
+  if log_transform:
+    x = x.log1p()
+  if row_normalize:
+    x = normalize(x)
+  finish = datetime.now()
+  print 'elapsed time: %d sec.' % (finish - start).seconds
+  return x, y
+
 
 def load_features(feature_set_name):
   '''
