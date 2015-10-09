@@ -39,7 +39,7 @@ def limit(archive_num, train_data, max_items):
 def one_archive(archive_num, train_data):
   '''
   A generator that produces tuples of (filename, label, soup) or
-  (filename, soup), where soup is a web page parsed by BeautifulSoup,
+  (filename, 0, soup), where soup is a web page parsed by BeautifulSoup,
   for all of the files in an archive.
   Assumes the naming convention: 0.zip...5.zip
   
