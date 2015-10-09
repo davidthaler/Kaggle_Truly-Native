@@ -2,7 +2,6 @@ from bs4 import BeautifulSoup as bs
 import os
 import argparse
 from datetime import datetime
-import re
 import zip_io
 import paths
 import artifacts
@@ -11,20 +10,18 @@ import artifacts
 
 D = 2**20
 
-def write_features(sample_dict, outfile):
+
+def write_features(data, outfile):
   print 'Feature space dimension: %d' % D
   start = datetime.now()
   outpath = os.path.join(paths.PROCESSED, outfile + '.libsvm')
-  if sample_dict is not None:
-    sample = zip_io.generate_sample(sample_dict)
-  else:
-    sample = zip_io.generate_test()
   with open(outpath, 'w') as f_out:
-    for (k, page_tuple) in enumerate(sample):
+    for (k, page_tuple) in enumerate(data):
       label = str(page_tuple[1])
       page = page_tuple[2]
       row = {}
       tag_counts(row, page)
+      # at 20k, its better without these
       #tag_bigrams(row, page)
       #tag_trigrams(row, page)
       tag_attrs(row, page)
@@ -96,22 +93,48 @@ def attrs(row, page):
       row[key] = ct + 1
   
   
+def sample_features(sample_name, outfile):
+  sample_dict = artifacts.get_artifact(sample_name)
+  sample = zip_io.generate_sample(sample_dict)
+  write_features(sample, outfile)
+
+
+def test_features(outfile):
+  test = zip_io.generate_test()
+  write_features(test, outfile)
+
+
+def train_features(outfile):
+  train_dict = artifacts.get_artifact('train_dict')
+  for archive_num in range(5):
+    data = zip_io.one_archive(archive_num, train_dict)
+    batch_name = '%s.%d' % (outfile, archive_num)
+    write_features(data, batch_name)
+
+
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description =
            'Write sample of training data as .libsvm file at paths.ARTIFACTS')
   parser.add_argument('outfile', type=str, help = 
            'Data matrix written at paths/PROCESSED/<outfile>.libsvm')
   parser.add_argument('--sample', type=str, help = 
-          'filename of sample dict at paths/ARTIFACTS')
+           'filename of sample dict at paths/ARTIFACTS')
+  parser.add_argument('--train', action='store_true', help=
+           'compute training set features in per-file batches')
+  parser.add_argument('--test', action='store_true', help=
+           'compute features over test set')
   parser.add_argument('--bits', type=int, default=20, help=
           'notional feature space dimension is 2**bits')
   args = parser.parse_args()
   D = 2**args.bits
   if args.sample is not None:
-    sample_dict = artifacts.get_artifact(args.sample)
-    write_features(sample_dict, args.outfile)
+    sample_features(args.sample, args.outfile)
+  elif args.test is not None:
+    test_features(args.outfile)
+  elif args.train is not None:
+    train_features(args.outfile)
   else:
-    write_features(None, args.outfile)
+    print 'must select one of --sample, --train or --test'
 
 
 
