@@ -46,8 +46,8 @@ def one_archive(archive_num, train_data):
   Args:
     archive_num - either an int or string 0...5 or '0'...'5'
     train_data - A dict or none. 
-      If dict, it maps filenames to labels, and labels are included in output.
-      If None, only file names are included in output.
+      If dict, it maps filenames to labels, and both are included in output.
+      If None, filenames are output, and the labels are all 0.
       If not None, only files in the dict are produced.
         
   Generate:
