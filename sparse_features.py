@@ -9,9 +9,10 @@ import artifacts
 
 # Do not import pandas into this module.
 
-D = 2**24
+D = 2**20
 
 def write_features(sample_dict, outfile):
+  print 'Feature space dimension: %d' % D
   start = datetime.now()
   outpath = os.path.join(paths.PROCESSED, outfile + '.libsvm')
   if sample_dict is not None:
@@ -76,8 +77,10 @@ if __name__ == '__main__':
            'Data matrix written at paths/PROCESSED/<outfile>.libsvm')
   parser.add_argument('--sample', type=str, help = 
           'filename of sample dict at paths/ARTIFACTS')
+  parser.add_argument('--bits', type=int, default=2**20, help=
+          'notional feature space dimension is 2**bits')
   args = parser.parse_args()
-  
+  D = 2**args.bits
   if args.sample is not None:
     sample_dict = artifacts.get_artifact(args.sample)
     write_features(sample_dict, args.outfile)
