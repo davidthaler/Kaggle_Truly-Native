@@ -86,13 +86,6 @@ def train_ids():
   tr = pd.read_csv(paths.TRAIN)
   return set(tr.file)
 
-  
-def sample_submission():
-  '''
-  Loads the sample submission as a Pandas data frame.
-  '''
-  return pd.read_csv(paths.SAMPLE)
-
 
 def create_sample(outfile, n_pos, n_neg):
   '''
@@ -122,6 +115,12 @@ def create_sample(outfile, n_pos, n_neg):
   put_artifact(sample, outfile)
 
 
-
+def write_submission(pred, submit_id):
+  s1 = os.path.join(paths.SUBMIT, 'submission_1.csv.gz')
+  result = pd.read_csv(s1, compression='gzip')
+  result.sponsored = pred
+  submission_name = 'submission_%s.csv' % str(submit_id)
+  submission = os.path.join(paths.SUBMIT, submission_name)
+  result.to_csv(submission, index=False)
 
 
