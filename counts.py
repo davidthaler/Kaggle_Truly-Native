@@ -45,9 +45,15 @@ def get_counts(sample_base):
     hrefs = page.select('[href]')
     all_urls = [tag['src'] for tag in srcs]
     all_urls.extend([tag['href'] for tag in hrefs])
-    all_web = [urlparse(u).netloc for u in all_urls]
+    all_web = []
+    all_paths = []
+    for u in all_urls:
+      try:
+        all_web.append(urlparse(u).netloc)
+        all_paths.append(urlparse(u).path)
+      except ValueError:
+        pass
     page_urls = set(all_web)
-    all_paths = [urlparse(u).path for u in all_urls]
     page_paths = set(all_paths)
 
     for key in page_urls:
