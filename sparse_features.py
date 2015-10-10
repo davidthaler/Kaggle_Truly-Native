@@ -101,7 +101,9 @@ def sample_features(sample_name, outfile):
 
 def test_features(outfile):
   test = zip_io.generate_test()
-  write_features(test, outfile)
+  # The + '.5' allows the test set to have the same base name as the 
+  # training data, with base.5 as test and base.0-4 for train.
+  write_features(test, outfile + '.5')
 
 
 def train_features(outfile):
@@ -126,12 +128,13 @@ if __name__ == '__main__':
   parser.add_argument('--bits', type=int, default=20, help=
           'notional feature space dimension is 2**bits')
   args = parser.parse_args()
+  print args
   D = 2**args.bits
   if args.sample is not None:
     sample_features(args.sample, args.outfile)
-  elif args.test is not None:
+  elif args.test:
     test_features(args.outfile)
-  elif args.train is not None:
+  elif args.train:
     train_features(args.outfile)
   else:
     print 'must select one of --sample, --train or --test'
