@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 from sklearn.datasets import load_svmlight_file
 from sklearn.preprocessing import normalize
+from sklearn.externals import joblib
 import paths
 
 # This module imports pandas and sklearn, so it can't run under pypy
@@ -27,8 +28,13 @@ def load_sparse(feature_set_name,
     y - numpy 1-D array of labels
   '''
   start = datetime.now()
-  path = os.path.join(paths.PROCESSED, feature_set_name + '.libsvm')
-  x, y = load_svmlight_file(path, n_features=n_features)
+  cached = os.path.join(paths.TMP, feature_set_name + '.job')
+  if os.path.isfile(cached):
+    x, y = joblib.load(cached)
+  else:
+    path = os.path.join(paths.PROCESSED, feature_set_name + '.libsvm')
+    x, y = load_svmlight_file(path, n_features=n_features)
+    joblib.dump((x, y), cached)
   if log_transform:
     x = x.log1p()
   if row_normalize:
