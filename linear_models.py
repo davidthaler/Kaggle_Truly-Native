@@ -63,7 +63,7 @@ if __name__ == '__main__':
   parser.add_argument('-p', '--passes', type=int, default=5, 
         help='number of passes over full training data')
   parser.add_argument('-l', '--loss', choices=['hinge', 'squared_hinge'], 
-        default='hinge', help='loss function for model')
+        default='squared_hinge', help='loss function for model')
   parser.add_argument('-v', '--validate', action='store_true', 
         help='do validation')
   start = datetime.now()
