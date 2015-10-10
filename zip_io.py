@@ -63,13 +63,13 @@ def one_archive(archive_num, train_data):
     if train_data is not None:
       pages = [page for page in pages if page.split('/')[1] in train_data]
     for page in pages:
-      f = zf.open(page)
-      soup = bs(f, 'html.parser')
-      page_name = page.split('/')[1]
-      if train_data is not None:
-        yield (page_name, train_data[page_name], soup)
-      else:
-        yield (page_name, 0, soup)
+      with zf.open(page) as f:
+        soup = bs(f, 'html.parser')
+        page_name = page.split('/')[1]
+        if train_data is not None:
+          yield (page_name, train_data[page_name], soup)
+        else:
+          yield (page_name, 0, soup)
         
         
 
