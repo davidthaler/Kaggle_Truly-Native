@@ -1,12 +1,12 @@
 from datetime import datetime
 from urlparse import urlparse
 from collections import Counter
+import argparse
 import zip_io
 import artifacts
 import pdb
 
 def get_counts(sample_base):
-  start = datetime.now()
   sample_dict = artifacts.get_artifact(sample_base)
   sample = zip_io.generate_sample(sample_dict)
   
@@ -73,9 +73,30 @@ def get_counts(sample_base):
          'urls'          : urls,
          'paths'         : paths}
          
+
+  return out
+
+if __name__ == '__main__':
+  text = '''
+  Collect document frequencies for tags, attributes, urls, etc. from 
+  a sample specified in <sample> and write results at artifacts/<outfile>.pkl
+  '''
+  start = datetime.now()
+  parser = argparse.ArgumentParser(description=text)
+  parser.add_argument('outfile', help=
+      'bare name of output file, without path or extension')
+  parser.add_argument('sample', help='bare name of sample')
+  args = parser.parse_args()
+  out = get_counts(args.sample)
+  artifacts.put_artifact(out, args.outfile)
   finish = datetime.now()
   print 'Elapsed time: %d sec.' % (finish - start).seconds
-  return out
+
+
+
+
+
+
 
 
 
