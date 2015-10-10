@@ -44,11 +44,8 @@ def test(model, infile_base, bits):
 
 def run_all(model, infile_base, passes, bits, submit_id,):
   train(model, infile_base, passes, bits)
-  result = util.sample_submission()
-  result.sponsored = test(model, infile_base, bits)
-  submission_name = 'submission_%s.csv' % str(submit_id)
-  submission = os.path.join(paths.SUBMIT, submission_name)
-  result.to_csv(submission, index=False)
+  pred = test(model, infile_base, bits)
+  util.write_submission(pred, submit_id)
 
 
 if __name__ == '__main__':
