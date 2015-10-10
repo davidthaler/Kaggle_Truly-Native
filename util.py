@@ -5,7 +5,7 @@ from sklearn.datasets import load_svmlight_file
 from sklearn.preprocessing import normalize
 import paths
 
-# This module imports pandas, so it can't run under pypy
+# This module imports pandas and sklearn, so it can't run under pypy
 
 def load_sparse(feature_set_name,
                 n_features, 

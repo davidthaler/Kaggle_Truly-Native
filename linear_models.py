@@ -78,7 +78,7 @@ if __name__ == '__main__':
   if args.validate:
     validate(model, args.infile, args.passes, args.bits)
   else:
-    run_all(model, args.infile, args.passes, args.bits, args.submit)
+    run_all(model, args.infile, args.passes, args.bits, args.submit_id)
   finish = datetime.now()
   print 'Run finished: %d sec.' % (finish - start).seconds
 
