@@ -22,11 +22,11 @@ def write_features(data, outfile):
       row = {}
       tag_counts(row, page)
       # at 20k, it was better without these
-      tag_bigrams(row, page)
-      tag_trigrams(row, page)
+      #tag_bigrams(row, page)
+      #tag_trigrams(row, page)
       tag_attrs(row, page)
       tag_attr_vals(row, page)
-      attrs(row, page)
+      #attrs(row, page)
       f_out.write(label + ' ')
       for key in sorted(row.keys()):
         f_out.write('%s:%d ' % (key, row[key]))
