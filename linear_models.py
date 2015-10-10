@@ -72,6 +72,8 @@ if __name__ == '__main__':
   model = PassiveAggressiveClassifier(C=args.C,  
                                       loss=args.loss, 
                                       warm_start=True)
+  print 'Using model:'
+  print model
   if args.validate:
     validate(model, args.infile, args.passes, args.bits)
   else:
