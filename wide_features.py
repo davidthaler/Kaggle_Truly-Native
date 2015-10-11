@@ -64,6 +64,8 @@ def write_features(data, outfile):
       add_attrs(row, page, top_items)
       add_tag_attrs(row, page, top_items)
       add_tag_attr_vals(row, page, top_items)
+      add_urls(row, page, top_items)
+      add_paths(row, page, top_items)
       text_features(row, page)
       writer.writerow(row)  
 
@@ -102,6 +104,30 @@ def add_tag_attr_vals(row, page, top_items):
       key = tag.name + '_' + a + '_' + unicode(tag.attrs[a])
       if key in top_items.tag_attr_vals:
         row[key] += 1
+
+
+def add_urls(row, page, top_items):
+  all_urls = [x['src'] for x in page.select('[src]')]
+  all_urls.extend([x['href'] for x in page.select('[href]')])
+  for u in all_urls:
+    try:
+      key = urlparse(u).netloc
+      if key in top_items.urls:
+        row[key] += 1
+    except ValueError:
+      pass
+
+  
+def add_paths(row, page, top_items):
+  all_urls = [x['src'] for x in page.select('[src]')]
+  all_urls.extend([x['href'] for x in page.select('[href]')])
+  for u in all_urls:
+    try:
+      key = urlparse(u).path
+      if key in top_items.paths:
+        row[key] += 1
+    except ValueError:
+      pass
 
 
 # copied as-is from tree_features
