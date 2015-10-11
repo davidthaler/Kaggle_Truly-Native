@@ -150,23 +150,19 @@ def text_features(row, page):
 
 def test_features(outfile):
   test = zip_io.generate_test()
-  # The + '.5' allows the test set to have the same base name as the 
-  # training data, with base.5 as test and base.0-4 for train.
-  write_features(test, outfile + '.5')
+  write_features(test, outfile + '_test')
+
+
+def train_features(outfile):
+  train_dict = artifacts.get_artifact('train_dict')
+  data = zip_io.generate_sample(sample_dict)
+  write_features(sample, outfile + '_train')
 
 
 def sample_features(sample_name, outfile):
   sample_dict = artifacts.get_artifact(sample_name)
   sample = zip_io.generate_sample(sample_dict)
   write_features(sample, outfile)
-
-
-def train_features(outfile):
-  train_dict = artifacts.get_artifact('train_dict')
-  for archive_num in range(5):
-    data = zip_io.one_archive(archive_num, train_dict)
-    batch_name = '%s.%d' % (outfile, archive_num)
-    write_features(data, batch_name)
 
 
 def all(outfile):
