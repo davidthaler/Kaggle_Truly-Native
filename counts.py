@@ -17,8 +17,9 @@ def get_counts(sample_base):
   tag_attr_vals = Counter()
   urls          = Counter()
   paths         = Counter()
+  ctrs = [tags, bigrams, attrs, tag_attrs, tag_attr_vals, urls, paths]
   
-  for page_tuple in sample:
+  for (k, page_tuple) in enumerate(sample):
     page = page_tuple[2]
     
     page_tags          = set()
@@ -28,7 +29,6 @@ def get_counts(sample_base):
     page_tag_attr_vals = set()
     page_urls          = set()
     page_paths         = set()
-    
     for tag in page.find_all(True):
       page_tags.add(tag.name)
       for child in tag.find_all(True, recursive=False):
@@ -70,7 +70,13 @@ def get_counts(sample_base):
       tag_attrs[key] += 1
     for key in page_tag_attr_vals:
       tag_attr_vals[key] += 1
-      
+    
+    if (k + 1) % 1000 == 0:
+      for ctr in ctrs:
+        for key in ctr.keys():
+          if ctr[key] == 1:
+            del ctr[key]
+
   out = {'tags'          : tags, 
          'bigrams'       : bigrams, 
          'attrs'         : attrs,
@@ -78,7 +84,6 @@ def get_counts(sample_base):
          'tag_attr_vals' : tag_attr_vals,
          'urls'          : urls,
          'paths'         : paths}
-         
 
   return out
 
