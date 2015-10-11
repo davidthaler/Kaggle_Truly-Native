@@ -155,8 +155,8 @@ def test_features(outfile):
 
 def train_features(outfile):
   train_dict = artifacts.get_artifact('train_dict')
-  data = zip_io.generate_sample(sample_dict)
-  write_features(sample, outfile + '_train')
+  data = zip_io.generate_sample(train_dict)
+  write_features(data, outfile + '_train')
 
 
 def sample_features(sample_name, outfile):
