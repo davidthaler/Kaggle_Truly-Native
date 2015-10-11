@@ -4,6 +4,7 @@ from datetime import datetime
 from sklearn.datasets import load_svmlight_file
 from sklearn.preprocessing import normalize
 from sklearn.externals import joblib
+import artifacts
 import paths
 
 # This module imports pandas and sklearn, so it can't run under pypy
@@ -118,7 +119,7 @@ def create_sample(outfile, n_pos, n_neg):
   # numpy.int64, which prevents using pypy
   labels = [int(x) for x in sample_df.sponsored]
   sample = dict(zip(sample_df.file, labels))
-  put_artifact(sample, outfile)
+  artifacts.put_artifact(sample, outfile)
 
 
 def write_submission(pred, submit_id):
