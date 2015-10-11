@@ -148,18 +148,57 @@ def text_features(row, page):
   row['bracket_ct'] = text.count('}')
 
 
+def test_features(outfile):
+  test = zip_io.generate_test()
+  # The + '.5' allows the test set to have the same base name as the 
+  # training data, with base.5 as test and base.0-4 for train.
+  write_features(test, outfile + '.5')
+
+
+def sample_features(sample_name, outfile):
+  sample_dict = artifacts.get_artifact(sample_name)
+  sample = zip_io.generate_sample(sample_dict)
+  write_features(sample, outfile)
+
+
+def train_features(outfile):
+  train_dict = artifacts.get_artifact('train_dict')
+  for archive_num in range(5):
+    data = zip_io.one_archive(archive_num, train_dict)
+    batch_name = '%s.%d' % (outfile, archive_num)
+    write_features(data, batch_name)
+
+
+def all(outfile):
+  train_features(outfile)
+  test_features(outfile)
+  
+  
 if __name__ == '__main__':
   start = datetime.now()
   parser = argparse.ArgumentParser(description=
       'Makes dense count features from the most frequent tags, attributes, etc.')
   parser.add_argument('outfile', help=
       'Base name of the output file, with no path or extension')
-  parser.add_argument('sample', help=
+  parser.add_argument('--all', action='store_true', help=
+      'Make training and test sets in one go.')
+  parser.add_argument('--train', action='store_true', help=
+      'Generate features for full training set.')
+  parser.add_argument('--test', action='store_true', help=
+      'Generate features for test set.')
+  parser.add_argument('--sample', help=
       'Base name of the sample file, with no path or extension')
   args = parser.parse_args()
-  sample_dict = artifacts.get_artifact(args.sample)
-  data = zip_io.generate_sample(sample_dict)
-  write_features(data, args.outfile)
+  if args.all:
+    all(args.outfile)
+  elif args.test:
+    test_features(args.outfile)
+  elif args.train:
+    train_features(args.outfile)
+  elif args.sample is not None:
+    sample_features(args.sample, args.outfile)
+  else:
+    print 'must select one of --sample, --train or --test'
   finish = datetime.now()
   print 'Elapsed time: %d sec.' % (finish - start).seconds 
 
