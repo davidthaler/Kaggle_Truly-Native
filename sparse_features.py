@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup as bs
 import os
 import argparse
+from urlparse import urlparse
 from datetime import datetime
 import zip_io
 import paths
@@ -21,6 +22,8 @@ def write_features(data, outfile):
       page = page_tuple[2]
       row = {}
       tag_counts(row, page)
+      get_urls(row, page)
+      get_paths(row, page)
       #parents(row, page)
       #tag_children(row, page)
       #tag_bigrams(row, page)
@@ -44,6 +47,33 @@ def tag_counts(row, page):
     key = abs(hash(tag.name)) % D
     ct = row.get(key, 0)
     row[key] = ct + 1
+
+
+def get_paths(row, page):
+  all_urls = [x['src'] for x in page.select('[src]')]
+  all_urls.extend([x['href'] for x in page.select('[href]')])
+  for u in all_urls:
+    try:
+      path = urlparse(u).path
+      path_parts = path.split('/')
+      for p in path_parts:
+        key = abs(hash('pathpart' + p)) % D
+        ct = row.get(key, 0)
+        row[key] = ct + 1
+    except ValueError:
+      pass
+
+
+def get_urls(row, page):
+  all_urls = [x['src'] for x in page.select('[src]')]
+  all_urls.extend([x['href'] for x in page.select('[href]')])
+  for u in all_urls:
+    try:
+      key = abs(hash(urlparse(u).netloc)) % D
+      ct = row.get(key, 0)
+      row[key] = ct + 1
+    except ValueError:
+      pass
 
 
 def parents(row, page):
