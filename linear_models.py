@@ -1,3 +1,4 @@
+import numpy as np
 from sklearn.linear_model import PassiveAggressiveClassifier
 from sklearn.metrics import roc_auc_score
 import os
@@ -6,8 +7,72 @@ from datetime import datetime
 import util
 import artifacts
 import paths
+import random
 
 
+def avg_run_all(n_models, base_model, infile_base, passes, bits, submit_id):
+  models = []
+  orders = []
+  l = range(5)
+  for k in range(n_models):
+    model_k = base_model.__class__()
+    model_k.set_params(**base_model.get_params())
+    models.append(model_k)
+    random.shuffle(l)
+    orders.append(l[:])
+  model_orders = zip(models, orders)
+    
+  for k in range(passes):
+    print 'Pass %d' % k
+    for (m, order) in model_orders:
+      for file_num in order:
+        train_set_name = '%s.%d' % (infile_base, file_num)
+        print 'loading training file: ' + train_set_name
+        x, y = util.load_sparse(train_set_name, n_features=2**bits)
+        m.partial_fit(x, y, classes=[0., 1.])
+        
+  test_set_name = infile_base + '.5'
+  print 'loading test set...'
+  x, y = util.load_sparse(test_set_name, n_features=2**bits)
+  dvs = np.zeros((len(y), n_models))
+  for (k, m) in enumerate(models):
+    dvs[:, k] = m.decision_function(x)
+  dv = dvs.mean(axis=1)
+  util.write_submission(dv, submit_id)
+
+
+def avg_validate(n_models, base_model, infile_base, passes, bits):
+  models = []
+  orders = []
+  l = range(4)
+  for k in range(n_models):
+    model_k = base_model.__class__()
+    model_k.set_params(**base_model.get_params())
+    models.append(model_k)
+    random.shuffle(l)
+    orders.append(l[:])
+  model_orders = zip(models, orders)
+    
+  for k in range(passes):
+    print 'Pass %d' % k
+    for (m, order) in model_orders:
+      for file_num in order:
+        train_set_name = '%s.%d' % (infile_base, file_num)
+        print 'loading training file: ' + train_set_name
+        x, y = util.load_sparse(train_set_name, n_features=2**bits)
+        m.partial_fit(x, y, classes=[0., 1.])
+        
+  val_set_name = infile_base + '.4'
+  print 'loading validation set...'
+  x, y = util.load_sparse(val_set_name, n_features=2**bits)
+  dvs = np.zeros((len(y), n_models))
+  for (k, m) in enumerate(models):
+    dvs[:, k] = m.decision_function(x)
+  dv = dvs.mean(axis=1)
+  score = roc_auc_score(y, dv)
+  print 'AUC: %.4f' % score
+  
+  
 def validate(model, infile_base, passes, bits):
   for k in range(passes):
     print 'Pass %d' % k
@@ -42,7 +107,7 @@ def test(model, infile_base, bits):
   return dv
 
 
-def run_all(model, infile_base, passes, bits, submit_id,):
+def run_all(model, infile_base, passes, bits, submit_id):
   train(model, infile_base, passes, bits)
   pred = test(model, infile_base, bits)
   util.write_submission(pred, submit_id)
@@ -66,6 +131,8 @@ if __name__ == '__main__':
         default='squared_hinge', help='loss function for model')
   parser.add_argument('-v', '--validate', action='store_true', 
         help='do validation')
+  parser.add_argument('--avg', type=int, help=
+       'average this # of models together, trained on different data order')
   start = datetime.now()
   args = parser.parse_args()
   print args
@@ -75,9 +142,20 @@ if __name__ == '__main__':
   print 'Using model:'
   print model
   if args.validate:
-    validate(model, args.infile, args.passes, args.bits)
+    if args.avg is None:
+      validate(model, args.infile, args.passes, args.bits)
+    else:
+      avg_validate(args.avg, model, args.infile, args.passes, args.bits)
   else:
-    run_all(model, args.infile, args.passes, args.bits, args.submit_id)
+    if args.avg is None:
+      run_all(model, args.infile, args.passes, args.bits, args.submit_id)
+    else:
+      avg_run_all(args.avg, 
+                  model, 
+                  args.infile, 
+                  args.passes, 
+                  args.bits, 
+                  args.submit_id)
   finish = datetime.now()
   print 'Run finished: %d sec.' % (finish - start).seconds
 
