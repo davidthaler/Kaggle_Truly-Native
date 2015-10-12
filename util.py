@@ -1,8 +1,10 @@
 import pandas as pd
 import os
+import gzip
 from datetime import datetime
 from sklearn.datasets import load_svmlight_file
 from sklearn.preprocessing import normalize
+from sklearn.preprocessing import scale
 from sklearn.externals import joblib
 import artifacts
 import paths
@@ -129,5 +131,58 @@ def write_submission(pred, submit_id):
   submission_name = 'submission_%s.csv' % str(submit_id)
   submission = os.path.join(paths.SUBMIT, submission_name)
   result.to_csv(submission, index=False)
+
+
+def combine_scaled_submissions(submissions, submit_id=None, rescale=True):
+  '''
+  Combines a list of submission in .csv or .csv.gz format, 
+  optionally standard-scaling them first.
+  This is an AUC competition, as adding predictions is ok.
+  Assumes that the predictions are in the same order.
+  
+  Args:
+    submissions - a list of submission names with extension, but without paths
+    submit_id - default None. If provided, writes the submission out at:
+      BASE/submissions/submission_<submit_id>.csv
+    rescale - default True. If True, standard-scale predictions before combining
+    
+  Returns:
+    If submit_id is None, a data frame with the combined predictions.
+    Else, returns nothing, but writes out combined predictions.
+  '''
+  combined = None
+  for sname in submissions:
+    path = os.path.join(paths.SUBMIT, sname)
+    if sname.endswith('.gz'):
+      sub = pd.read_csv(path,  compression='gzip')
+    else:
+      sub = pd.read_csv(path)
+      
+    if rescale:
+      pred = scale(sub.sponsored)
+    else:
+      pred = sub.sponsored
+      
+    if combined is None:
+      combined = pred
+    else:
+      combined += pred
+  
+  if submit_id is None:
+    out = sub.copy()
+    out.sponsored = combined
+    return out
+  else:
+    write_submission(combined, submit_id)
+
+
+
+
+
+
+
+
+
+
 
 
