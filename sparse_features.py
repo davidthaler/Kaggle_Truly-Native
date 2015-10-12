@@ -41,7 +41,7 @@ def tag_counts(row, page):
   tags = page.find_all(True)
   for tag in tags:
     key = abs(hash(tag.name)) % D
-    ct = row.get(tag.name, 0)
+    ct = row.get(key, 0)
     row[key] = ct + 1
 
 def tag_bigrams(row, page):
