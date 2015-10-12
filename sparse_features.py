@@ -21,7 +21,8 @@ def write_features(data, outfile):
       page = page_tuple[2]
       row = {}
       tag_counts(row, page)
-      # at 20k, it was better without these
+      #parents(row, page)
+      #tag_children(row, page)
       #tag_bigrams(row, page)
       #tag_trigrams(row, page)
       tag_attrs(row, page)
@@ -44,6 +45,25 @@ def tag_counts(row, page):
     ct = row.get(key, 0)
     row[key] = ct + 1
 
+
+def parents(row, page):
+  tags = page.find_all(True)
+  for tag in tags:
+    parents = len(list(tag.parents))
+    key = abs(hash(tag.name + 'child' +  str(parents))) % D
+    ct = row.get(key, 0)
+    row[key] = ct + 1
+
+
+def tag_children(row, page):
+  tags = page.find_all(True)
+  for tag in tags:
+    children = len(tag.find_all(True, recursive=False))
+    key = abs(hash(tag.name + 'child' +  str(children))) % D
+    ct = row.get(key, 0)
+    row[key] = ct + 1
+
+
 def tag_bigrams(row, page):
   tags = page.find_all(True)
   for tag in tags:
@@ -52,6 +72,7 @@ def tag_bigrams(row, page):
       key = abs(hash(tag.name + '-' + child.name)) % D
       ct = row.get(key, 0)
       row[key] = ct + 1
+
 
 def tag_trigrams(row, page):
   tags = page.find_all(True)
