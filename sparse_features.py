@@ -170,23 +170,28 @@ if __name__ == '__main__':
            'Write sample of training data as .libsvm file at paths.ARTIFACTS')
   parser.add_argument('outfile', type=str, help = 
            'Data matrix written at paths/PROCESSED/<outfile>.libsvm')
-  parser.add_argument('--sample', type=str, help = 
-           'filename of sample dict at paths/ARTIFACTS')
+  parser.add_argument('--all', action='store_true', help=
+           'compute features over training and test data in per-file batches')
   parser.add_argument('--train', action='store_true', help=
            'compute training set features in per-file batches')
   parser.add_argument('--test', action='store_true', help=
            'compute features over test set')
+  parser.add_argument('--sample', type=str, help = 
+           'filename of sample dict at paths/ARTIFACTS')
   parser.add_argument('--bits', type=int, default=20, help=
           'notional feature space dimension is 2**bits')
   args = parser.parse_args()
   print args
   D = 2**args.bits
-  if args.sample is not None:
-    sample_features(args.sample, args.outfile)
+  if args.all:
+    train_features(args.outfile)
+    test_features(args.outfile)
   elif args.test:
     test_features(args.outfile)
   elif args.train:
     train_features(args.outfile)
+  elif args.sample is not None:
+    sample_features(args.sample, args.outfile)
   else:
     print 'must select one of --sample, --train or --test'
 
