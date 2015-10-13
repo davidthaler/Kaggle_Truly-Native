@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup as bs
 import os
 import argparse
+import re
+from collections import Counter
 from urlparse import urlparse
 from datetime import datetime
 import zip_io
@@ -24,6 +26,8 @@ def write_features(data, outfile):
       tag_counts(row, page)
       get_urls(row, page)
       get_paths(row, page)
+      hashed_strings(row, page)
+      #script_tokens(row, page)
       #parents(row, page)
       #tag_children(row, page)
       #tag_bigrams(row, page)
@@ -47,6 +51,30 @@ def tag_counts(row, page):
     key = abs(hash(tag.name)) % D
     ct = row.get(key, 0)
     row[key] = ct + 1
+
+
+def hashed_strings(row, page):
+  for s in page.stripped_strings:
+    key = abs(hash(s[:100])) % D
+    ct = row.get(key, 0)
+    row[key] = ct + 1
+
+
+def script_tokens(row, page):
+  ctr = Counter()
+  for tag in page.select('script'):
+    script_tokens = re.split('\W', tag.get_text())
+    for token in script_tokens:
+      if len(token) > 2:
+        ctr[token] += 1
+        
+  for tag in page.select('script'):
+    script_tokens = re.split('\W', tag.get_text())
+    for token in script_tokens:
+      if ctr[token] >= 5:
+        key = abs(hash(token)) % D
+        ct = row.get(key, 0)
+        row[key] = ct + 1
 
 
 def get_paths(row, page):
