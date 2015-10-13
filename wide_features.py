@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup as bs
 from csv import DictWriter
 import os
+import re
 import argparse
 from datetime import datetime
 from urlparse import urlparse
@@ -27,12 +28,15 @@ def load_counts():
     a namedtuple of sets of the items of each type that had a document
     frequency above threshold in the sample
   '''
-  counts = artifacts.get_artifact('counts')
+  #counts = artifacts.get_artifact('counts')
+  counts = artifacts.get_artifact('new_counts')
   Counters = namedtuple('Counters', counts.keys())
   for ctr_name in counts:
     ctr = counts[ctr_name]
     if ctr_name in ['tags', 'urls']:
       thr = 400
+    elif ctr_name == 'script':
+      thr = 10000
     else:
       thr = 4000
     counts[ctr_name] = {key for key in ctr if ctr[key] > thr}
@@ -68,7 +72,9 @@ def write_features(data, outfile):
       row['compression_ratio'] = page_tuple[4] / (1.0 + page_tuple[3])
       # fill row up with features
       add_tags(row, page, top_items)
-      add_bigrams(row, page, top_items)
+      add_script(row, page, top_items)
+      add_style(row, page, top_items)
+      #add_bigrams(row, page, top_items)
       add_attrs(row, page, top_items)
       add_tag_attrs(row, page, top_items)
       add_tag_attr_vals(row, page, top_items)
@@ -76,6 +82,22 @@ def write_features(data, outfile):
       add_paths(row, page, top_items)
       text_features(row, page)
       writer.writerow(row)  
+
+
+def add_script(row, page, top_items):
+  for script_tag in page.select('script'):
+    script_tokens = re.findall('\W(\w\w+)\W', script_tag.get_text())
+    for token in script_tokens:
+      if token in top_items.script:
+        row[token] += 1
+
+
+def add_style(row, page, top_items):
+  for style_tag in page.select('style'):
+    style_tokens = re.findall('\W(\w\w+)\W', style_tag.get_text())
+    for token in style_tokens:
+      if token in top_items.style:
+        row[token] += 1
 
 
 def add_tags(row, page, top_items):
@@ -97,6 +119,7 @@ def add_attrs(row, page, top_items):
     for a in tag.attrs:
       if a in top_items.attrs:
         row[a] += 1
+        
         
 def add_tag_attrs(row, page, top_items):
   for tag in page.find_all(True):
