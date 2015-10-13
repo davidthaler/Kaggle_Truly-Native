@@ -1,6 +1,8 @@
 import pandas as pd
+import numpy as np
 import os
 import gzip
+from math import log
 from datetime import datetime
 from sklearn.datasets import load_svmlight_file
 from sklearn.preprocessing import normalize
@@ -133,51 +135,56 @@ def write_submission(pred, submit_id):
   result.to_csv(submission, index=False)
 
 
-def combine_scaled_submissions(submissions, submit_id=None, rescale=True):
+def combine_dvs(dv_subs, prob_subs, clip_at, submit_id):
   '''
-  Combines a list of submission in .csv or .csv.gz format, 
-  optionally standard-scaling them first.
-  This is an AUC competition, as adding predictions is ok.
-  Assumes that the predictions are in the same order.
+  Take lists of filenames of submissions in .csv or .csv.gz format and 
+  combine them into one submission. 
+  Outputs of models that output probabilities are clipped and converted 
+  to log-odds and then averaged together. 
+  Outputs of models that output log-odds or decision values are just averaged. 
+  The two averaged predictions are then standard-scaled and added.
+  Filenames should be with extension but without path.
+  The files must be at BASE/submissions
   
   Args:
-    submissions - a list of submission names with extension, but without paths
-    submit_id - default None. If provided, writes the submission out at:
-      BASE/submissions/submission_<submit_id>.csv
-    rescale - default True. If True, standard-scale predictions before combining
-    
-  Returns:
-    If submit_id is None, a data frame with the combined predictions.
-    Else, returns nothing, but writes out combined predictions.
+    prob_subs - list of str. - filenames of probability-scale submissions
+    dv_subs - list of str. - filenames of log-odds scale (or dv) entries
+    clip_at - the probabilities are clipped at [clip_at, 1 - clip_at]
+    submit_id - the result is written as submissions/submission_<submit_id>.csv
   '''
-  combined = None
-  for sname in submissions:
-    path = os.path.join(paths.SUBMIT, sname)
-    if sname.endswith('.gz'):
+  logodds = lambda x : log(x/(1 - x))
+  all_odds = None
+  for sub_name in prob_subs:
+    path = os.path.join(paths.SUBMIT, sub_name)
+    if sub_name.endswith('.gz'):
       sub = pd.read_csv(path,  compression='gzip')
     else:
       sub = pd.read_csv(path)
-      
-    if rescale:
-      pred = scale(sub.sponsored)
+    pred = sub.sponsored.clip(lower = clip_at, upper = 1 - clip_at)
+    pred = pred.apply(logodds)
+    if all_odds is None:
+      all_odds = pred
     else:
-      pred = sub.sponsored
-      
-    if combined is None:
-      combined = pred
-    else:
-      combined += pred
+      all_odds += pred
+  all_odds = all_odds / len(prob_subs)
+  all_odds = scale(all_odds)
   
-  if submit_id is None:
-    out = sub.copy()
-    out.sponsored = combined
-    return out
-  else:
-    write_submission(combined, submit_id)
-
-
-
-
+  all_dvs = None
+  for sub_name in dv_subs:
+    path = os.path.join(paths.SUBMIT, sub_name)
+    if sub_name.endswith('.gz'):
+      sub = pd.read_csv(path,  compression='gzip')
+    else:
+      sub = pd.read_csv(path)
+    if all_dvs is None:
+      all_dvs = sub.sponsored
+    else:
+      all_dvs += sub.sponsored
+  all_dvs = all_dvs / len(dv_subs)
+  all_dvs = scale(all_dvs)
+  
+  result = all_dvs + all_odds
+  write_submission(result, submit_id)
 
 
 
