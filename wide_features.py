@@ -12,9 +12,14 @@ import artifacts
 
 # Do not import pandas/numpy etc. into this file. It need to run under pypy.
 
-TEXT_NAMES = ['bracket_ct', 'long_doctype', 'markup_len', 'markup_line_ct',
+TEXT_NAMES = ['brace_ct', 'bracket_ct', 'long_doctype', 'markup_len', 'markup_line_ct',
               'semicolon_ct', 'short_doctype', 'strict', 'text_len', 
-              'text_line_ct', 'text_token_ct', 'transitional']
+              'text_line_ct', 'text_token_ct', 'transitional', 'parens_ct',
+              'plus_ct', 'minus_ct', 'times_ct', 'divide_ct', 'and_ct', 'or_ct', 
+              'colon_ct', 'under_ct', 'single_ct', 'double_ct', 'tab_ct', 
+              'dot_ct', 'question_ct', 'excl_ct', 'amp_ct', 'hash_ct', 
+              'backslash_ct', 'dollar_ct']
+
 
 def load_counts():
   '''
@@ -44,7 +49,8 @@ def write_features(data, outfile):
   outpath = os.path.join(paths.PROCESSED, outfile + '.csv')
 
   top_items = load_counts()
-  fieldnames = ['file', 'sponsored']
+  fieldnames = ['file', 'sponsored', 'file_size', 
+                'compressed_size', 'compression_ratio']
   for items in top_items:
     fieldnames.extend(items)
   fieldnames.extend(TEXT_NAMES)
@@ -57,7 +63,9 @@ def write_features(data, outfile):
       row['file'] = page_tuple[0]
       row['sponsored'] = page_tuple[1]
       page = page_tuple[2]
-      
+      row['file_size'] = page_tuple[3]
+      row['compressed_size'] = page_tuple[4]
+      row['compression_ratio'] = page_tuple[4] / (1.0 + page_tuple[3])
       # fill row up with features
       add_tags(row, page, top_items)
       add_bigrams(row, page, top_items)
@@ -145,7 +153,27 @@ def text_features(row, page):
   row['text_line_ct'] = text.count('\n')
   row['text_token_ct'] = len(text.split())
   row['semicolon_ct'] = text.count(';')
-  row['bracket_ct'] = text.count('}')
+  row['brace_ct'] = text.count('}')
+  row['bracket_ct'] = text.count(']')
+  row['parens_ct'] = text.count(')')
+  row['plus_ct'] = text.count('+')
+  row['minus_ct'] = text.count('-')
+  row['times_ct'] = text.count('*')
+  row['divide_ct'] = text.count('/')
+  row['and_ct'] = text.count('&')
+  row['or_ct'] = text.count('|')
+  row['colon_ct'] = text.count(':')
+  row['under_ct'] = text.count('_')
+  row['single_ct'] = text.count("'")
+  row['double_ct'] = text.count('"')
+  row['tab_ct'] = text.count('\t')
+  row['dot_ct'] = text.count('.')
+  row['question_ct'] = text.count('?')
+  row['excl_ct'] = text.count('!')
+  row['amp_ct'] = text.count('@')
+  row['hash_ct'] = text.count('#')
+  row['backslash_ct'] = text.count('\\')
+  row['dollar_ct'] =  text.count('$')
 
 
 def test_features(outfile):
@@ -194,7 +222,7 @@ if __name__ == '__main__':
   elif args.sample is not None:
     sample_features(args.sample, args.outfile)
   else:
-    print 'must select one of --sample, --train or --test'
+    print 'must select one of --sample, --train,  --test or --all'
   finish = datetime.now()
   print 'Elapsed time: %d sec.' % (finish - start).seconds 
 
