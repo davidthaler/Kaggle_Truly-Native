@@ -2,9 +2,11 @@ from datetime import datetime
 from urlparse import urlparse
 from collections import Counter
 import argparse
+import re
 import zip_io
 import artifacts
 import pdb
+
 
 def get_counts(sample_base):
   sample_dict = artifacts.get_artifact(sample_base)
@@ -17,7 +19,10 @@ def get_counts(sample_base):
   tag_attr_vals = Counter()
   urls          = Counter()
   paths         = Counter()
-  ctrs = [tags, bigrams, attrs, tag_attrs, tag_attr_vals, urls, paths]
+  script        = Counter()
+  style         = Counter()
+  ctrs = [tags, bigrams, attrs, tag_attrs, tag_attr_vals, urls, paths,
+          script, style]
   
   for (k, page_tuple) in enumerate(sample):
     page = page_tuple[2]
@@ -29,6 +34,9 @@ def get_counts(sample_base):
     page_tag_attr_vals = set()
     page_urls          = set()
     page_paths         = set()
+    page_script        = set()
+    page_style         = set()
+    
     for tag in page.find_all(True):
       page_tags.add(tag.name)
       for child in tag.find_all(True, recursive=False):
@@ -40,6 +48,15 @@ def get_counts(sample_base):
         page_tag_attrs.add(key)
         key = key + '_' + unicode(tag.attrs[a])
         page_tag_attr_vals.add(key)
+      if tag.name == 'script':
+        script_tokens = re.findall('\W(\w\w+)\W', tag.get_text())
+        for tok in script_tokens:
+          page_script.add(tok)
+      if tag.name == 'style':
+        style_tokens = re.findall('\W(\w\w+)\W', tag.get_text())
+        for tok in style_tokens:
+          page_style.add(tok)
+          
     
     srcs = page.select('[src]')
     hrefs = page.select('[href]')
@@ -70,6 +87,10 @@ def get_counts(sample_base):
       tag_attrs[key] += 1
     for key in page_tag_attr_vals:
       tag_attr_vals[key] += 1
+    for key in page_script:
+      script[key] += 1
+    for key in page_style:
+      style[key] += 1
     
     if (k + 1) % 1000 == 0:
       for ctr in ctrs:
@@ -83,7 +104,9 @@ def get_counts(sample_base):
          'tag_attrs'     : tag_attrs,
          'tag_attr_vals' : tag_attr_vals,
          'urls'          : urls,
-         'paths'         : paths}
+         'paths'         : paths,
+         'script'        : script,
+         'style'         : style}
 
   return out
 
