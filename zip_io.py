@@ -59,17 +59,21 @@ def one_archive(archive_num, train_data):
   archive_path = os.path.join(paths.DATA, archive_name)
   with zipfile.ZipFile(archive_path) as zf:
     # first entry is '<archive_num>/'
-    pages = zf.namelist()[1:]
+    pages = zf.infolist()[1:]
     if train_data is not None:
-      pages = [page for page in pages if page.split('/')[1] in train_data]
+      pages = [pg for pg in pages if pg.filename.split('/')[1] in train_data]
     for page in pages:
-      with zf.open(page) as f:
+      with zf.open(page.filename) as f:
         soup = bs(f, 'html.parser')
-        page_name = page.split('/')[1]
+        page_name = page.filename.split('/')[1]
         if train_data is not None:
-          yield (page_name, train_data[page_name], soup)
+          yield (page_name, 
+                 train_data[page_name], 
+                 soup, 
+                 page.file_size, 
+                 page.compress_size)
         else:
-          yield (page_name, 0, soup)
+          yield (page_name, 0, soup, page.file_size, page.compress_size)
         
         
 
