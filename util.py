@@ -55,7 +55,9 @@ def load_features(feature_set_name):
   at path data/processed.
   '''
   path = os.path.join(paths.PROCESSED, feature_set_name + '.csv')
-  return pd.read_csv(path)
+  out = pd.read_csv(path)
+  out.fillna(0, inplace=True)
+  return out
 
 
 def load_train(as_dict):
