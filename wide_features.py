@@ -62,7 +62,7 @@ def write_features(data, outfile):
   with open(outpath, 'w') as f_out:
     writer = DictWriter(f_out, fieldnames=fieldnames)
     writer.writeheader()
-    for page_tuple in data:
+    for (k, page_tuple) in enumerate(data):
       row = Counter()
       row['file'] = page_tuple[0]
       row['sponsored'] = page_tuple[1]
@@ -81,7 +81,9 @@ def write_features(data, outfile):
       add_urls(row, page, top_items)
       add_paths(row, page, top_items)
       text_features(row, page)
-      writer.writerow(row)  
+      writer.writerow(row)
+      if (k + 1) % 1000 == 0:
+        print '%d lines read' % (k + 1)
 
 
 def add_script(row, page, top_items):
