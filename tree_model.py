@@ -7,6 +7,7 @@ from datetime import datetime
 import os
 import argparse
 import paths
+import util
 
 
 def train_extra_trees(data, n_trees=100):
@@ -43,16 +44,18 @@ def predict(model, data):
 
 def run_model(train_data, test_data, n_trees, submit_id, model):
   start = datetime.now()
-  train_path = os.path.join(paths.PROCESSED, train_data + '.csv')
-  train = pd.read_csv(train_path)
+  train = util.load_features(train_data)
+  drops = util.get_drop_cols(train)
+  train.drop(drops, axis=1, inplace=True)
   print 'Training...'
   if model == 'rf':
     model = train_rf(train, n_trees)
   else:
     model = train_extra_trees(train, n_trees)
-  test_path = os.path.join(paths.PROCESSED, test_data + '.csv')
+  del train
   print 'Predicting...'
-  test = pd.read_csv(test_path)
+  test = util.load_features(test_data)
+  test.drop(drops, axis=1, inplace=True)
   result = predict(model, test)
   submission_name = 'submission_%s.csv' % str(submit_id)
   submission = os.path.join(paths.SUBMIT, submission_name)
