@@ -49,21 +49,22 @@ def load_sparse(feature_set_name,
   return x, y
 
 
-def load_features(feature_set_name, drop):
+def load_features(feature_set_name):
   '''
   Utility function to load a feature set with filename <feature_set_name.csv>
   at path data/processed.
   '''
   path = os.path.join(paths.PROCESSED, feature_set_name + '.csv')
   out = pd.read_csv(path)
-  out.fillna(0, inplace=True)
-  if drop:
-    drops = []
-    for c in out.columns:
-      if not out[c].any():
-        drops.append(c)
-    out.drop(drops, axis=1, inplace=True)
+  out.fillna(0, inplace=True) 
   return out
+  
+def get_drop_cols(out):
+  drops = []
+  for c in out.columns:
+    if not out[c].any():
+      drops.append(c)
+  return drops
 
 
 def load_train(as_dict):
