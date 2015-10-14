@@ -11,4 +11,5 @@ ARTIFACTS =  os.path.join(BASE, 'artifacts')
 PROCESSED = os.path.join(DATA, 'processed')
 SUBMIT = os.path.join(BASE, 'submissions')
 TMP = os.path.join(BASE, 'tmp')
+MODELS = os.path.join(BASE, 'models')
 
