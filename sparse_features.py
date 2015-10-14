@@ -2,7 +2,6 @@ from bs4 import BeautifulSoup as bs
 import os
 import argparse
 import re
-from collections import Counter
 from urlparse import urlparse
 from datetime import datetime
 import zip_io
@@ -10,6 +9,9 @@ import paths
 import artifacts
 
 # Do not import pandas into this module.
+
+# These are set up for the "E" features. The "D" features were best.
+# To get "D" comment out the calls to script_tokens and style_tokens.
 
 D = 2**20
 
@@ -27,7 +29,8 @@ def write_features(data, outfile):
       get_urls(row, page)
       get_paths(row, page)
       hashed_strings(row, page)
-      #script_tokens(row, page)
+      script_tokens(row, page)
+      style_tokens(row, page)
       #parents(row, page)
       #tag_children(row, page)
       #tag_bigrams(row, page)
@@ -61,20 +64,21 @@ def hashed_strings(row, page):
 
 
 def script_tokens(row, page):
-  ctr = Counter()
   for tag in page.select('script'):
-    script_tokens = re.split('\W', tag.get_text())
+    script_tokens = re.findall('\W(\w\w+)\W', tag.get_text())
     for token in script_tokens:
-      if len(token) > 2:
-        ctr[token] += 1
-        
-  for tag in page.select('script'):
-    script_tokens = re.split('\W', tag.get_text())
-    for token in script_tokens:
-      if ctr[token] >= 5:
-        key = abs(hash(token)) % D
-        ct = row.get(key, 0)
-        row[key] = ct + 1
+      key = abs(hash(token)) % D
+      ct = row.get(key, 0)
+      row[key] = ct + 1
+
+
+def style_tokens(row, page):
+  for tag in page.select('style'):
+    style_tokens = re.findall('\W(\w\w+)\W', tag.get_text())
+    for token in style_tokens:
+      key = abs(hash(token)) % D
+      ct = row.get(key, 0)
+      row[key] = ct + 1
 
 
 def get_paths(row, page):
