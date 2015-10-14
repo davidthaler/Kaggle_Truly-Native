@@ -125,7 +125,7 @@ if __name__ == '__main__':
         help='notional feature space dimension is 2**bits')
   parser.add_argument('-C', type=float, default=1.0, 
         help='C parameter of passive-aggressive model')
-  parser.add_argument('-p', '--passes', type=int, default=5, 
+  parser.add_argument('-p', '--passes', type=int, default=10, 
         help='number of passes over full training data')
   parser.add_argument('-l', '--loss', choices=['hinge', 'squared_hinge'], 
         default='squared_hinge', help='loss function for model')
