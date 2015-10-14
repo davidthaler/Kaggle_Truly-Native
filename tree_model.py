@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.externals import joblib
 from sklearn.metrics import roc_auc_score
 from datetime import datetime
 import os
@@ -42,20 +43,25 @@ def predict(model, data):
   return out  
 
 
-def run_model(train_data, test_data, n_trees, submit_id, model):
+def run_model(train_data, test_data, n_trees, submit_id, model, save_model=False):
   start = datetime.now()
   train = util.load_features(train_data)
   drops = util.get_drop_cols(train)
   train.drop(drops, axis=1, inplace=True)
+  print 'training set size: (%d, %d)' % train.shape
   print 'Training...'
   if model == 'rf':
     model = train_rf(train, n_trees)
   else:
     model = train_extra_trees(train, n_trees)
+  if save_model:
+    model_path = os.path.join(paths.MODELS, submit_id + '_model.job')
+    joblib.dump(model, model_path)
   del train
   print 'Predicting...'
   test = util.load_features(test_data)
   test.drop(drops, axis=1, inplace=True)
+  print 'test set size: (%d, %d)' % test.shape
   result = predict(model, test)
   submission_name = 'submission_%s.csv' % str(submit_id)
   submission = os.path.join(paths.SUBMIT, submission_name)
