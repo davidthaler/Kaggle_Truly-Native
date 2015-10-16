@@ -51,18 +51,34 @@ def load_sparse(feature_set_name,
 
 def load_features(feature_set_name):
   '''
-  Utility function to load a feature set with filename <feature_set_name.csv>
-  at path data/processed.
+  Utility function to load a feature set from:
+   paths.PROCESSED/<feature_set_name>.csv
+
+  Args:
+    a bare filename of the feature set without path or extension
+
+  Returns:
+    a Pandas data frame of features
   '''
   path = os.path.join(paths.PROCESSED, feature_set_name + '.csv')
   out = pd.read_csv(path)
   out.fillna(0, inplace=True) 
   return out
   
-def get_drop_cols(out):
+  
+def get_drop_cols(df):
+  '''
+  Finds column names of any all-zero columns in a Pandas data frame.
+  
+  Args:
+    df - a Pandas data frame of features
+    
+  Returns:
+    a list of column names of all-zero columns
+  '''
   drops = []
-  for c in out.columns:
-    if not out[c].any():
+  for c in df.columns:
+    if not df[c].any():
       drops.append(c)
   return drops
 
@@ -88,23 +104,6 @@ def load_train(as_dict):
     return dict(zip(tr.file, labels))
   else:
     return tr
-
-
-def test_dict():
-  '''
-  Makes a dict with label of 0 (as python int) for use in some routines.
-  '''
-  test = sample_submission()
-  labels = [0] * len(test.file)
-  return dict(zip(test.file, labels))
-
-
-def train_ids():
-  '''
-  Loads the training set ids into a set.
-  '''
-  tr = pd.read_csv(paths.TRAIN)
-  return set(tr.file)
 
 
 def create_sample(outfile, n_pos, n_neg):
@@ -136,6 +135,17 @@ def create_sample(outfile, n_pos, n_neg):
 
 
 def write_submission(pred, submit_id):
+  '''
+  Writes out a submission from an array of scores. 
+  Order of scores must be that of zip_io.generate_test.
+  
+  Args:
+    pred - numpy 1-D array or similar of scores to write.
+    submit_id - identifier for the submission
+  
+  Writes:
+    A submission at paths.SUBMIT/submisssion_<submit_id>.csv
+  '''
   s1 = os.path.join(paths.SUBMIT, 'submission_1.csv.gz')
   result = pd.read_csv(s1, compression='gzip')
   result.sponsored = pred
@@ -160,6 +170,9 @@ def combine_dvs(dv_subs, prob_subs, clip_at, submit_id):
     dv_subs - list of str. - filenames of log-odds scale (or dv) entries
     clip_at - the probabilities are clipped at [clip_at, 1 - clip_at]
     submit_id - the result is written as submissions/submission_<submit_id>.csv
+    
+  Writes:
+    A submission at paths.SUBMIT/submisssion_<submit_id>.csv
   '''
   logodds = lambda x : log(x/(1 - x))
   all_odds = None
