@@ -8,9 +8,9 @@ import zip_io
 import paths
 import artifacts
 
-# Do not import pandas into this module.
+# Do not import pandas into this module. It needs to run under pypy.
 
-# These are set up for the "E" features. The "D" features were best.
+# These are set up for the "E" features.
 # To get "D" comment out the calls to script_tokens and style_tokens.
 
 D = 2**20

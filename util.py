@@ -11,12 +11,13 @@ from sklearn.externals import joblib
 import artifacts
 import paths
 
-# This module imports pandas and sklearn, so it can't run under pypy
+# This module imports pandas and sklearn, so it can't run under pypy.
 
 def load_sparse(feature_set_name,
                 n_features, 
                 log_transform=True, 
-                row_normalize=True):
+                row_normalize=True,
+                verbose=True):
   '''
   Utility function to load a sparse feature set for linear models.
   Features must be in LibSVM format. 
@@ -27,6 +28,7 @@ def load_sparse(feature_set_name,
     n_features - probably 2**20, see sparse_features.py
     log_transform - if True, transform counts with log1p
     row_normalize - if True, L2 normalize rows after log transform (if used)
+    verbose - default True. If True, print the runtime.
     
   Returns:
     x - scipy.sparse.csr matrix of features
@@ -45,7 +47,8 @@ def load_sparse(feature_set_name,
   if row_normalize:
     x = normalize(x)
   finish = datetime.now()
-  print 'elapsed time: %d sec.' % (finish - start).seconds
+  if verbose:
+    print 'elapsed time: %d sec.' % (finish - start).seconds
   return x, y
 
 

@@ -8,7 +8,7 @@ import zip_io
 import paths
 import artifacts
 
-# Do not import pandas into this module.
+# Do not import pandas into this module. It needs to run under pypy.
 
 BARE_TAGS = ['a', 'article', 'b', 'br', 'button', 
              'center', 'dd', 'div', 'dl', 'dt', 'em', 'footer', 

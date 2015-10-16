@@ -10,6 +10,7 @@ import argparse
 import paths
 import util
 
+# This module imports pandas and sklearn, so it can't run under pypy.
 
 def train_extra_trees(data, n_trees=100):
   start = datetime.now()
