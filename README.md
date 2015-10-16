@@ -22,10 +22,11 @@ You may have to agree to a set of competition rules before downloading.
 *  Pandas - 0.16.2 
 *  scikit-learn - 0.16.1
 *  BeautifulSoup - 4.3.2   
-*  Pypy - 2.4.0    
+*  Pypy(optional) - 2.4.0    
 
 The model does not use any cutting edge features of those packages, 
-so any recent versions should be fine.   
+so any recent versions should be fine. BeautifulSoup must be visible to Pypy, 
+That usually means installing it with pypy/bin/pip.   
 
 You will need to create the directory structure:
 ```
@@ -61,9 +62,10 @@ This creates two artifacts (train_dict and sample_20_20) used to make features. 
 ```
 pypy counts.py counts sample_20_20
 pypy wide_features.py tree_features --all
-pypy sparse_features.py linear_features --all --avg 10
+pypy sparse_features.py linear_features --all
 ```
-These create the features. They will be at data/processed/. Next run:
+These create the features. They will be at data/processed/. 
+Be advised that even under Pypy, the final features will take several hours to run. Next run:
 ```
 python linear_models.py linear_features --submit_id linear
 python tree_models.py --train tree_features_train --test tree_features_test --model rf --ntrees 300 --submit_id rf
@@ -78,7 +80,7 @@ Finally, to combine the submissions:
 python combine.py
 ```
 Note that for the competition, I used 3000 trees of each of random forest and extremely 
-randomized trees, which takes about 10x longer.
+randomized trees and the setting --avg 10 on the linear model, both of which take about 10x longer.
 
 
 

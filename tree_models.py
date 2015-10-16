@@ -129,10 +129,10 @@ if __name__ == '__main__':
           help='type of model to train: rf or etxra(trees classifier)')
   parser.add_argument('--ntrees', type=int, required=True, help=
           'number of trees to use in model')
-  parser.add_argument('--submit', type=str, required=True, help=
+  parser.add_argument('--submit_id', type=str, required=True, help=
           'submission is written at submissions/submission_[submit].csv')
   args = parser.parse_args()
-  run_model(args.train, args.test, args.ntrees, args.submit, args.model)
+  run_model(args.train, args.test, args.ntrees, args.submit_id, args.model)
 
     
 
