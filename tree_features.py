@@ -10,6 +10,8 @@ import artifacts
 
 # Do not import pandas into this module. It needs to run under pypy.
 
+# We need to define the feature names, because we are using a csv.DictWriter.
+
 BARE_TAGS = ['a', 'article', 'b', 'br', 'button', 
              'center', 'dd', 'div', 'dl', 'dt', 'em', 'footer', 
              'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 
@@ -60,8 +62,22 @@ PATH_FEATURES = ['wp-content', 'wp-includes', 'plugins', 'jquery', 'sites',
                  'assets', 'js', 'widgets', 'files', 'ajax', 'themes', 
                  'public', 'google', 'bootstrap', 'pagead', 'media', 
                  'static', 'share']
-                 
+
+
 def write_sample(sample_dict, outfile):
+  '''
+  Reads data from a sample, or all of the test set, extracts features, 
+  and writes the features out in .csv format at path.PROCESSED.
+  
+  Args:
+    sample_dict - None, or a dict like {filename: label} for every file 
+        in the sample. If None, runs the test set. Use a dict with the 
+        full training set to get training features.
+    outfile - just the base, with no path or extension
+    
+  Writes:
+    features in .csv format
+  '''
   start = datetime.now()
   outpath = os.path.join(paths.PROCESSED, outfile + '.csv')
   if sample_dict is not None:
