@@ -3,6 +3,7 @@ import os
 # Do not import pandas/numpy/scipy into this module.
 # It gets imported by stuff that runs under pypy.
 
+# edit BASE (and maybe HOME) so that BASE points to the project root
 HOME = os.path.expanduser('~')
 BASE = os.path.join(HOME, 'Documents', 'Kaggle', 'dato')
 DATA = os.path.join(BASE, 'data')
