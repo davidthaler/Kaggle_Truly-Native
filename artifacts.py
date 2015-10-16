@@ -2,7 +2,7 @@ import os
 import cPickle
 import paths
 
-# Do not import pandas into this module.
+# Do not import pandas into this module. It need to run under pypy.
 
 def put_artifact(obj, artifactfile):
   '''

@@ -7,8 +7,20 @@ import zip_io
 import artifacts
 import pdb
 
+# Do not import pandas, numpy, etc. into this file. It runs under pypy.
 
 def get_counts(sample_base):
+  '''
+  Collect counts of tags, tag bigrams, attributes, tag-attribute pairs, 
+  tag-attribute-value tuples, urls, paths, and tokens from script and 
+  style tags for every file in the sample.
+  
+  Args:
+    sample_base - a bare sample name e.g sample20_20, which would read
+        artifact/sample20_20.pkl
+  Returns:
+    a dict of Counter like {'type of thing': {'thing': count of thing}}
+  '''
   sample_dict = artifacts.get_artifact(sample_base)
   sample = zip_io.generate_sample(sample_dict)
   
@@ -114,6 +126,11 @@ if __name__ == '__main__':
   text = '''
   Collect document frequencies for tags, attributes, urls, etc. from 
   a sample specified in <sample> and write results at artifacts/<outfile>.pkl
+  
+  Example: pypy counts.py stats sample20_20
+  
+  Collect statistics for files in artifacts/sample20_20.pkl and write output
+  at artifacts/stats.pkl.
   '''
   start = datetime.now()
   parser = argparse.ArgumentParser(description=text)

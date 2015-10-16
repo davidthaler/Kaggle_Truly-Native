@@ -4,7 +4,7 @@ from datetime import datetime
 
 def cv_sparse(model, x, y):
   '''
-  Cross-validation for sparse-type features.
+  Cross-validation for sparse-type features used in linear models.
   
   Args:
     model - the model to train and validate
@@ -21,14 +21,3 @@ def cv_sparse(model, x, y):
   print 'elapsed time: %d sec.' % (finish - start).seconds
   return scores.mean(), scores
   
-
-def score(y_true, y_pred):
-  '''
-  Args:
-    y_true - an ndarray of ground truth labels.
-    y_pred - an ndarray of predictions.
-
-  Returns:
-    AUC score
-  '''
-  return roc_auc_score(y_true, y_pred)
