@@ -61,16 +61,25 @@ This creates two artifacts (train_dict and sample_20_20) used to make features. 
 ```
 pypy counts.py counts sample_20_20
 pypy wide_features.py tree_features --all
-pypy sparse_features.py linear_features --all
+pypy sparse_features.py linear_features --all --avg 10
 ```
 These create the features. They will be at data/processed/. Next run:
 ```
 python linear_models.py linear_features --submit_id linear
-python tree_models.py tree_features --submit_id trees
+python tree_models.py --train tree_features_train --test tree_features_test --model rf --ntrees 300 --submit_id rf
+python tree_models.py --train tree_features_train --test tree_features_test --model extra --ntrees 300 --submit_id extra
 ```
-These calls will produce submissions submission_linear.csv and submission_trees.csv in 
+These calls will produce submissions called submission_linear.csv and submission_trees.csv in 
 submissions/.
-Note that running linear_models.py will leave some cached feature files in tmp/.
+Note that running linear_models.py will leave some cached feature files in tmp/.  
+
+Finally, to combine the submissions:
+```
+python combine.py
+```
+Note that for the competition, I used 3000 trees of each of random forest and extremely 
+randomized trees, which takes about 10x longer.
+
 
 
 
