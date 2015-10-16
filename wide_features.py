@@ -13,6 +13,7 @@ import artifacts
 
 # Do not import pandas/numpy etc. into this file. It need to run under pypy.
 
+# These are the names of features extracted in text_features() below.
 TEXT_NAMES = ['brace_ct', 'bracket_ct', 'long_doctype', 'markup_len', 'markup_line_ct',
               'semicolon_ct', 'short_doctype', 'strict', 'text_len', 
               'text_line_ct', 'text_token_ct', 'transitional', 'parens_ct',
@@ -24,6 +25,9 @@ TEXT_NAMES = ['brace_ct', 'bracket_ct', 'long_doctype', 'markup_len', 'markup_li
 
 def load_counts():
   '''
+  Loads a dict of Counters like {'type of thing': 'thing': count of thing}
+  The dict is produced by counts.get_counts.
+  
   Returns:
     a namedtuple of sets of the items of each type that had a document
     frequency above threshold in the sample
@@ -45,9 +49,15 @@ def load_counts():
 
 def write_features(data, outfile):
   '''
+  Reads data from a generator, extracts features, and writes the features out
+  in .csv format at path.PROCESSED.
+  
   Args:
     data - a generator from zip_io such as generate_sample or generate_train
     outfile - just the base, with no path or extension
+    
+  Writes:
+    features in .csv format
   '''
   outpath = os.path.join(paths.PROCESSED, outfile + '.csv')
 
@@ -162,7 +172,6 @@ def add_paths(row, page, top_items):
       pass
 
 
-
 def text_features(row, page):
   markup = page.prettify()
   row['markup_len'] = len(markup)
@@ -201,23 +210,66 @@ def text_features(row, page):
 
 
 def test_features(outfile):
+  '''
+  Reads the test set, extracts features from it, and writes the features 
+  out in .csv format suitable for loading as a Pandas data frame.
+  
+  Args:
+    outfile - features are written at paths.PROCESSED/<outfile>_test.csv
+    
+  Writes:
+    features in .csv format
+  '''
   test = zip_io.generate_test()
   write_features(test, outfile + '_test')
 
 
 def train_features(outfile):
+  '''
+  Reads the training set, extracts features from it, and writes the features 
+  out in .csv format suitable for loading as a Pandas data frame.
+  
+  Args:
+    outfile - features are written at paths.PROCESSED/<outfile>_train.csv
+    
+  Writes:
+    features in .csv format
+  '''
   train_dict = artifacts.get_artifact('train_dict')
   data = zip_io.generate_sample(train_dict)
   write_features(data, outfile + '_train')
 
 
 def sample_features(sample_name, outfile):
+  '''
+  Reads a sample of the training set, extracts features from it, 
+  and writes the features out in .csv format suitable for loading 
+  as a Pandas data frame.
+  
+  Args:
+    sample - a bare name of a sample file without path or extension
+    outfile - features are written at paths.PROCESSED/<outfile>.csv
+    
+  Writes:
+    features in .csv format
+  '''
   sample_dict = artifacts.get_artifact(sample_name)
   sample = zip_io.generate_sample(sample_dict)
   write_features(sample, outfile)
 
 
 def all(outfile):
+  '''
+  Reads the training set and test set, extracts features, and writes the 
+  features out in .csv format suitable for loading as a Pandas data frame.
+  
+  Args:
+    outfile - features are written at paths.PROCESSED/<outfile>_train.csv 
+              and paths.PROCESSED/<outfile>_test.csv
+    
+  Writes:
+    features in .csv format
+  '''
   train_features(outfile)
   test_features(outfile)
   
@@ -249,10 +301,6 @@ if __name__ == '__main__':
     print 'must select one of --sample, --train,  --test or --all'
   finish = datetime.now()
   print 'Elapsed time: %d sec.' % (finish - start).seconds 
-
-
-
-
 
 
 
