@@ -1,7 +1,6 @@
 import os
 import util
 import artifacts
-import paths
 
 # This script must run in Python, not Pypy.
 

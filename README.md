@@ -80,7 +80,8 @@ Finally, to combine the submissions:
 python combine.py
 ```
 Note that for the competition, I used 3000 trees of each of random forest and extremely 
-randomized trees and the setting --avg 10 on the linear model, both of which take about 10x longer.
+randomized trees and the setting --avg 10 on the linear model, both of which take about 10x longer 
+to train, but scores 0.0005 higher.
 
 
 
