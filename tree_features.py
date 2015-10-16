@@ -9,7 +9,6 @@ import paths
 import artifacts
 
 # Do not import pandas into this module.
-# TODO: Don't forget to get the length/compressed length from the zip archive
 
 BARE_TAGS = ['a', 'article', 'b', 'br', 'button', 
              'center', 'dd', 'div', 'dl', 'dt', 'em', 'footer', 

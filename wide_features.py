@@ -28,8 +28,7 @@ def load_counts():
     a namedtuple of sets of the items of each type that had a document
     frequency above threshold in the sample
   '''
-  #counts = artifacts.get_artifact('counts')
-  counts = artifacts.get_artifact('new_counts')
+  counts = artifacts.get_artifact('counts')
   Counters = namedtuple('Counters', counts.keys())
   for ctr_name in counts:
     ctr = counts[ctr_name]
@@ -163,7 +162,7 @@ def add_paths(row, page, top_items):
       pass
 
 
-# copied as-is from tree_features
+
 def text_features(row, page):
   markup = page.prettify()
   row['markup_len'] = len(markup)
