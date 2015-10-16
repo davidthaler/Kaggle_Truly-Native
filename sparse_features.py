@@ -15,8 +15,18 @@ import artifacts
 
 D = 2**20
 
-
 def write_features(data, outfile):
+  '''
+  Reads data from a generator, extracts features, and writes the features out
+  in LibSVM format.
+  
+  Args:
+    data - a generator from zip_io.py
+    outfile - features are written at paths.PROCESSED/<outfile>.libsvm
+    
+  Writes:
+    features in LibSVM format
+  '''
   print 'Feature space dimension: %d' % D
   start = datetime.now()
   outpath = os.path.join(paths.PROCESSED, outfile + '.libsvm')
@@ -177,12 +187,33 @@ def attrs(row, page):
   
   
 def sample_features(sample_name, outfile):
+  '''
+  Reads data from a sample of the training set and writes the features out
+  in LibSVM format.
+  
+  Args:
+    sample - a bare name of a sample file without path or extension
+    outfile - features are written at paths.PROCESSED/<outfile>.libsvm
+    
+  Writes:
+    features in LibSVM format
+  '''
   sample_dict = artifacts.get_artifact(sample_name)
   sample = zip_io.generate_sample(sample_dict)
   write_features(sample, outfile)
 
 
 def test_features(outfile):
+  '''
+  Reads the test set, extracts features from it, and writes the features out
+  in LibSVM format.
+  
+  Args:
+    outfile - features are written at paths.PROCESSED/<outfile>.libsvm
+    
+  Writes:
+    features in LibSVM format
+  '''
   test = zip_io.generate_test()
   # The + '.5' allows the test set to have the same base name as the 
   # training data, with base.5 as test and base.0-4 for train.
@@ -190,6 +221,16 @@ def test_features(outfile):
 
 
 def train_features(outfile):
+  '''
+  Reads the training set, extracts features from it, and writes the features 
+  out in LibSVM format.
+  
+  Args:
+    outfile - features are written at paths.PROCESSED/<outfile>.libsvm
+    
+  Writes:
+    features in LibSVM format
+  '''
   train_dict = artifacts.get_artifact('train_dict')
   for archive_num in range(5):
     data = zip_io.one_archive(archive_num, train_dict)
